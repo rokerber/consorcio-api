@@ -15,7 +15,7 @@ public class ParametroRequestDTO {
     private String modalidade; // falor fixo CHEIA
     private BigDecimal valorCredito; // input
     private Integer prazo; // input em meses
-    private String incc; // inicialmente input( devara buscar online)
+    private Double incc; // inicialmente input( devara buscar online)
     private BigDecimal taxa; // input (devera haver uma tabela com a composicao das taxas)
     private BigDecimal recompra30; // input
     private BigDecimal acima30; // input
