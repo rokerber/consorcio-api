@@ -21,13 +21,14 @@ public class SimulacaoService {
     public List<SimulacaoDTO> simular(ParametroRequestDTO parametroRequestDTO){
         // monta a tabela para retornar
         List<SimulacaoDTO> simulacaoDTOList = new ArrayList<>();
+        LocalDate currentdate = LocalDate.now();
         for (int i = 1; i <= cota; i++) {
             Integer valorMesContemplacao = valorMesContemplacao(parametroRequestDTO.getPrazo());
             simulacaoDTOList.add(SimulacaoDTO.builder()
                     .cota(i)
                     .mesContemplacao(valorMesContemplacao)
                     .formaContemplacao("SORTEIO")
-                    .creditoAtualizado(gerarCreditoAtualizado(valorMesContemplacao, parametroRequestDTO))
+                    .creditoAtualizado(gerarCreditoAtualizado(valorMesContemplacao, parametroRequestDTO,currentdate.getMonthValue()))
                     .investimentoMensalCorrigido(new BigDecimal(123))
                     .valorInvestidoCorrigido(new BigDecimal(123))
                     .parcelaPosContemplacao(new BigDecimal(123))
@@ -42,12 +43,10 @@ public class SimulacaoService {
         return getRandomNumber(1,prazo);
     }
 
-    private BigDecimal gerarCreditoAtualizado(Integer valorMesContemplacao, ParametroRequestDTO parametroRequestDTO) {
-        LocalDate currentdate = LocalDate.now();
+    public BigDecimal gerarCreditoAtualizado(Integer valorMesContemplacao, ParametroRequestDTO parametroRequestDTO, Integer monthValue) {
         double incc = parametroRequestDTO.getIncc() * 0.01;
         double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
         double valorLance = parametroRequestDTO.getLance() * 0.01;
-        int monthValue = currentdate.getMonthValue();
         int counter = 0;
         int mesesRestantes = 13 - monthValue;
         BigDecimal valorCredito = parametroRequestDTO.getValorCredito();
