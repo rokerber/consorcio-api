@@ -16,9 +16,9 @@ public class ParametroRequestDTO {
     private BigDecimal valorCredito; // input
     private Integer prazo; // input em meses
     private Double incc; // inicialmente input( devara buscar online)
-    private BigDecimal taxa; // input (devera haver uma tabela com a composicao das taxas)
+    private Double taxaAdm; // input (devera haver uma tabela com a composicao das taxas)
     private BigDecimal recompra30; // input
     private BigDecimal acima30; // input
-    private BigDecimal lance; // input
+    private Double lance; // input
     private BigDecimal selic; // input (deverar buscar online)
 }

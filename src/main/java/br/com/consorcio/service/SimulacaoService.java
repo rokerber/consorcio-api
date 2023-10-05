@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,11 +22,12 @@ public class SimulacaoService {
         // monta a tabela para retornar
         List<SimulacaoDTO> simulacaoDTOList = new ArrayList<>();
         for (int i = 1; i <= cota; i++) {
+            Integer valorMesContemplacao = valorMesContemplacao(parametroRequestDTO.getPrazo());
             simulacaoDTOList.add(SimulacaoDTO.builder()
                     .cota(i)
-                    .mesContemplacao(valorMesContemplacao(parametroRequestDTO.getPrazo()))
+                    .mesContemplacao(valorMesContemplacao)
                     .formaContemplacao("SORTEIO")
-                    .creditoAtualizado(gerarCreditoAtualizado(parametroRequestDTO))
+                    .creditoAtualizado(gerarCreditoAtualizado(valorMesContemplacao, parametroRequestDTO))
                     .investimentoMensalCorrigido(new BigDecimal(123))
                     .valorInvestidoCorrigido(new BigDecimal(123))
                     .parcelaPosContemplacao(new BigDecimal(123))
@@ -40,12 +42,15 @@ public class SimulacaoService {
         return getRandomNumber(1,prazo);
     }
 
-    private BigDecimal gerarCreditoAtualizado(ParametroRequestDTO parametroRequestDTO) {
+    private BigDecimal gerarCreditoAtualizado(Integer valorMesContemplacao, ParametroRequestDTO parametroRequestDTO) {
         LocalDate currentdate = LocalDate.now();
-        int valorMesContemplacao = valorMesContemplacao(parametroRequestDTO.getPrazo());
+        double incc = parametroRequestDTO.getIncc() * 0.01;
+        double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
+        double valorLance = parametroRequestDTO.getLance() * 0.01;
         int monthValue = currentdate.getMonthValue();
         int counter = 0;
         int mesesRestantes = 13 - monthValue;
+        BigDecimal valorCredito = parametroRequestDTO.getValorCredito();
 
         if (valorMesContemplacao > mesesRestantes) {
             counter++;
@@ -54,13 +59,19 @@ public class SimulacaoService {
         for (int i = 25; i <= valorMesContemplacao; i = i + 12) {
                 counter++;
         }
-        double incc = parametroRequestDTO.getIncc() * 0.01;
-        BigDecimal valorCredito = parametroRequestDTO.getValorCredito();
-        // 4 precision
-        MathContext mathContext = new MathContext(8);
-        BigDecimal creditoMaisIncc = valorCredito.multiply(new BigDecimal(incc),mathContext);
-        BigDecimal creditoMaisInccFinal = creditoMaisIncc.multiply(new BigDecimal(counter),mathContext);
-        valorCredito = valorCredito.add(creditoMaisInccFinal,mathContext);
+        MathContext mathContext = new MathContext(8, RoundingMode.HALF_EVEN);
+        for (int i = 0; i < counter; i++) {
+            BigDecimal creditoMaisIncc = valorCredito.multiply(new BigDecimal(incc),mathContext);
+            valorCredito = valorCredito.add(creditoMaisIncc,mathContext);
+        }
+
+        if (valorLance > 0) {
+            BigDecimal valorCreditoVezesTaxaAdm = valorCredito.multiply(new BigDecimal(taxaAdm,mathContext));
+            BigDecimal valorCreditoMaisTaxaAdm = valorCredito.add(valorCreditoVezesTaxaAdm,mathContext);
+            BigDecimal valorCreditoVezesLance = valorCreditoMaisTaxaAdm.multiply(new BigDecimal(valorLance,mathContext));
+            valorCredito = valorCredito.subtract(valorCreditoVezesLance,mathContext);
+        }
+
         return valorCredito;
     }
 }
