@@ -58,19 +58,19 @@ public class SimulacaoService {
         for (int i = 25; i <= valorMesContemplacao; i = i + 12) {
                 counter++;
         }
-        MathContext mathContext = new MathContext(8, RoundingMode.HALF_EVEN);
+
         for (int i = 0; i < counter; i++) {
-            BigDecimal creditoMaisIncc = valorCredito.multiply(new BigDecimal(incc),mathContext);
-            valorCredito = valorCredito.add(creditoMaisIncc,mathContext);
+            BigDecimal creditoMaisIncc = valorCredito.multiply(new BigDecimal(incc));
+            valorCredito = valorCredito.add(creditoMaisIncc);
         }
 
         if (valorLance > 0) {
-            BigDecimal valorCreditoVezesTaxaAdm = valorCredito.multiply(new BigDecimal(taxaAdm,mathContext));
-            BigDecimal valorCreditoMaisTaxaAdm = valorCredito.add(valorCreditoVezesTaxaAdm,mathContext);
-            BigDecimal valorCreditoVezesLance = valorCreditoMaisTaxaAdm.multiply(new BigDecimal(valorLance,mathContext));
-            valorCredito = valorCredito.subtract(valorCreditoVezesLance,mathContext);
+            BigDecimal valorCreditoVezesTaxaAdm = valorCredito.multiply(new BigDecimal(taxaAdm));
+            BigDecimal valorCreditoMaisTaxaAdm = valorCredito.add(valorCreditoVezesTaxaAdm);
+            BigDecimal valorCreditoVezesLance = valorCreditoMaisTaxaAdm.multiply(new BigDecimal(valorLance));
+            valorCredito = valorCredito.subtract(valorCreditoVezesLance);
         }
 
-        return valorCredito;
+        return valorCredito.setScale(2, RoundingMode.HALF_EVEN);
     }
 }
