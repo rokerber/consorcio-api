@@ -27,16 +27,6 @@ public class SimulacaoServiceTest {
     static List<BigDecimal> valCredJanContempla230List = new ArrayList<>();
     static List<BigDecimal> valCredDezContempla1List = new ArrayList<>();
 
-    static List<BigDecimal> valCredTaxaAdmOutContempla110List = new ArrayList<>();
-    static List<BigDecimal> valCredTaxaAdmJanContempla12List = new ArrayList<>();
-    static List<BigDecimal> valCredTaxaAdmJanContempla230List = new ArrayList<>();
-    static List<BigDecimal> valCredTaxaAdmDezContempla1List = new ArrayList<>();
-
-    static List<BigDecimal> investMenCorrOutContempla110List = new ArrayList<>();
-    static List<BigDecimal> investMenCorrJanContempla12List = new ArrayList<>();
-    static List<BigDecimal> investMenCorranContempla230List = new ArrayList<>();
-    static List<BigDecimal> investMenCorrDezContempla1List = new ArrayList<>();
-
     @BeforeAll
     static void setup() {
         simulacaoService = new SimulacaoService();
@@ -49,34 +39,31 @@ public class SimulacaoServiceTest {
                 .lance(30.0)
                 .build();
 
-        creditoComInccOutContempla110 = simulacaoService.gerarCreditoComIncc(110, parametroRequestDTO, 10,valCredOutContempla110List);
-        valorCreditoMaisTaxaAdmOutContempla110 = simulacaoService.gerarValorCreditoMaisTaxaAdm(creditoComInccOutContempla110, parametroRequestDTO,valCredOutContempla110List,valCredTaxaAdmOutContempla110List);
+        double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
+        double incc = parametroRequestDTO.getIncc() * 0.01;
+        BigDecimal valorCredito = parametroRequestDTO.getValorCredito();
 
-        creditoComInccJanContempla12 = simulacaoService.gerarCreditoComIncc(12, parametroRequestDTO, 1,valCredJanContempla12List);
-        valorCreditoMaisTaxaAdmJanContempla12 = simulacaoService.gerarValorCreditoMaisTaxaAdm(creditoComInccJanContempla12, parametroRequestDTO,valCredJanContempla12List,valCredTaxaAdmJanContempla12List);
+        creditoComInccOutContempla110 = simulacaoService.gerarCreditoComIncc(110, incc, valorCredito,10,valCredOutContempla110List);
+        valorCreditoMaisTaxaAdmOutContempla110 = simulacaoService.gerarValorCreditoMaisTaxaAdm(creditoComInccOutContempla110, taxaAdm);
 
-        creditoComInccJanContempla230 = simulacaoService.gerarCreditoComIncc(230, parametroRequestDTO, 1,valCredJanContempla230List);
-        valorCreditoMaisTaxaAdmJanContempla230 = simulacaoService.gerarValorCreditoMaisTaxaAdm(creditoComInccJanContempla230, parametroRequestDTO,valCredJanContempla230List,valCredTaxaAdmJanContempla230List);
+        creditoComInccJanContempla12 = simulacaoService.gerarCreditoComIncc(12, incc, valorCredito,1,valCredJanContempla12List);
+        valorCreditoMaisTaxaAdmJanContempla12 = simulacaoService.gerarValorCreditoMaisTaxaAdm(creditoComInccJanContempla12, taxaAdm);
 
-        creditoComInccDezContempla1 = simulacaoService.gerarCreditoComIncc(1, parametroRequestDTO, 12,valCredDezContempla1List);
-        valorCreditoMaisTaxaAdmDezContempla1 = simulacaoService.gerarValorCreditoMaisTaxaAdm(creditoComInccDezContempla1, parametroRequestDTO,valCredDezContempla1List,valCredTaxaAdmDezContempla1List);
+        creditoComInccJanContempla230 = simulacaoService.gerarCreditoComIncc(230, incc, valorCredito, 1,valCredJanContempla230List);
+        valorCreditoMaisTaxaAdmJanContempla230 = simulacaoService.gerarValorCreditoMaisTaxaAdm(creditoComInccJanContempla230, taxaAdm);
+
+        creditoComInccDezContempla1 = simulacaoService.gerarCreditoComIncc(1, incc, valorCredito, 12,valCredDezContempla1List);
+        valorCreditoMaisTaxaAdmDezContempla1 = simulacaoService.gerarValorCreditoMaisTaxaAdm(creditoComInccDezContempla1,taxaAdm);
     }
 
     @Test
     void testCreditoAtualizado() {
-        ParametroRequestDTO parametroRequestDTO = ParametroRequestDTO.builder()
-                .modalidade("CHEIA")
-                .valorCredito(new BigDecimal(100000))
-                .prazo(240)
-                .incc(9.0)
-                .taxaAdm(25.0)
-                .lance(30.0)
-                .build();
+        double lance = parametroRequestDTO.getLance() * 0.01;
 
-        double creditoAtualizadoOutContempla110 = simulacaoService.gerarCreditoAtualizado(creditoComInccOutContempla110,valorCreditoMaisTaxaAdmOutContempla110,parametroRequestDTO).doubleValue();
-        double creditoAtualizadoJanContempla12 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla12,valorCreditoMaisTaxaAdmJanContempla12,parametroRequestDTO).doubleValue();
-        double creditoAtualizadoJanContempla230 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla230,valorCreditoMaisTaxaAdmJanContempla230,parametroRequestDTO).doubleValue();
-        double creditoAtualizadoDezContempla1 = simulacaoService.gerarCreditoAtualizado(creditoComInccDezContempla1,valorCreditoMaisTaxaAdmDezContempla1,parametroRequestDTO).doubleValue();
+        double creditoAtualizadoOutContempla110 = simulacaoService.gerarCreditoAtualizado(creditoComInccOutContempla110,valorCreditoMaisTaxaAdmOutContempla110, lance).doubleValue();
+        double creditoAtualizadoJanContempla12 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla12,valorCreditoMaisTaxaAdmJanContempla12,lance).doubleValue();
+        double creditoAtualizadoJanContempla230 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla230,valorCreditoMaisTaxaAdmJanContempla230,lance).doubleValue();
+        double creditoAtualizadoDezContempla1 = simulacaoService.gerarCreditoAtualizado(creditoComInccDezContempla1,valorCreditoMaisTaxaAdmDezContempla1,lance).doubleValue();
 
         assertEquals(135743.33, creditoAtualizadoOutContempla110);
         assertEquals(62500.0, creditoAtualizadoJanContempla12);
@@ -86,24 +73,28 @@ public class SimulacaoServiceTest {
 
     @Test
     void testInvestimentoMensalCorrigidoEValorCorrigido() {
-        double investMenCorrOutContempla110 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmOutContempla110,parametroRequestDTO,valCredTaxaAdmOutContempla110List,investMenCorrOutContempla110List).doubleValue();
-        double investMenCorrJanContempla12 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmJanContempla12,parametroRequestDTO,valCredTaxaAdmJanContempla12List,investMenCorrJanContempla12List).doubleValue();
-        double investMenCorrJanContempla230 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmJanContempla230,parametroRequestDTO,valCredTaxaAdmJanContempla230List,investMenCorranContempla230List).doubleValue();
-        double investMenCorrDezContempla1 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmDezContempla1,parametroRequestDTO,valCredTaxaAdmDezContempla1List,investMenCorrDezContempla1List).doubleValue();
+        Integer prazo = parametroRequestDTO.getPrazo();
+        double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
+
+
+        double investMenCorrOutContempla110 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmOutContempla110,prazo).doubleValue();
+        double investMenCorrJanContempla12 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmJanContempla12,prazo).doubleValue();
+        double investMenCorrJanContempla230 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmJanContempla230,prazo).doubleValue();
+        double investMenCorrDezContempla1 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmDezContempla1,prazo).doubleValue();
 
         assertEquals(1131.19, investMenCorrOutContempla110);
         assertEquals(520.83, investMenCorrJanContempla12);
         assertEquals(2677.95, investMenCorrJanContempla230);
         assertEquals(520.83, investMenCorrDezContempla1);
 
-        double valorCorridigoOutContempla110 = simulacaoService.gerarValorInvestidoCorrigido(investMenCorrOutContempla110List).doubleValue();
-        double valorCorridigoJanContempla12 = simulacaoService.gerarValorInvestidoCorrigido(investMenCorrJanContempla12List).doubleValue();
-        double valorCorridigoJanContempla230 = simulacaoService.gerarValorInvestidoCorrigido(investMenCorranContempla230List).doubleValue();
-        double valorCorridigoDezContempla1 = simulacaoService.gerarValorInvestidoCorrigido(investMenCorrDezContempla1List).doubleValue();
+        double valorCorridigoOutContempla110 = simulacaoService.gerarValorInvestidoCorrigido(valCredOutContempla110List,taxaAdm,prazo).doubleValue();
+        double valorCorridigoJanContempla12 = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla12List,taxaAdm,prazo).doubleValue();
+        double valorCorridigoJanContempla230 = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla230List,taxaAdm,prazo).doubleValue();
+        double valorCorridigoDezContempla1 = simulacaoService.gerarValorInvestidoCorrigido(valCredDezContempla1List,taxaAdm,prazo).doubleValue();
 
-        assertEquals(89136.98, valorCorridigoOutContempla110);
-        assertEquals(6249.96, valorCorridigoJanContempla12);
-        assertEquals(292971.06, valorCorridigoJanContempla230);
+        assertEquals(89137.12, valorCorridigoOutContempla110);
+        assertEquals(6250.0, valorCorridigoJanContempla12);
+        assertEquals(292971.26, valorCorridigoJanContempla230);
         assertEquals(520.83, valorCorridigoDezContempla1);
 
     }
