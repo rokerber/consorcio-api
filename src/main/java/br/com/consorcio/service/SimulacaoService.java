@@ -33,6 +33,7 @@ public class SimulacaoService {
             int valorMesContemplacao = valorMesContemplacao(prazo);
             BigDecimal creditoComIncc = gerarCreditoComIncc(valorMesContemplacao, incc, valorCredito, currentdate.getMonthValue(),valorCreditoList);
             BigDecimal valorCreditoMaisTaxaAdm = gerarValorCreditoMaisTaxaAdm(creditoComIncc, taxaAdm);
+            BigDecimal valorCreditoAtualizado = gerarCreditoAtualizado(creditoComIncc, valorCreditoMaisTaxaAdm,lance);
             BigDecimal investimentoMensalCorrigidoEscala2 = gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdm, prazo,2);
             BigDecimal investimentoMensalCorrigidoEscala10 = gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdm, prazo,10);
 
@@ -40,11 +41,11 @@ public class SimulacaoService {
                     .cota(i)
                     .mesContemplacao(valorMesContemplacao)
                     .formaContemplacao("SORTEIO")
-                    .creditoAtualizado(gerarCreditoAtualizado(creditoComIncc, valorCreditoMaisTaxaAdm,lance))
+                    .creditoAtualizado(valorCreditoAtualizado)
                     .investimentoMensalCorrigido(investimentoMensalCorrigidoEscala2)
                     .valorInvestidoCorrigido(gerarValorInvestidoCorrigido(valorCreditoList,taxaAdm,prazo))
                     .parcelaPosContemplacao(gerarParcelaPosContemplacao(investimentoMensalCorrigidoEscala10,modalidade,valorMesContemplacao,prazo,lance))
-                    .valorVenda(new BigDecimal(123))
+                    .valorVenda(gerarValorVenda(valorCreditoAtualizado,valorMesContemplacao))
                     .ir(new BigDecimal(123))
                     .build());
         }
@@ -123,7 +124,7 @@ public class SimulacaoService {
     }
 
     public BigDecimal gerarParcelaPosContemplacao(BigDecimal investimentoMensalCorrigido, Modalidade modalidade, int valorMesContemplacao, int prazo, double lance) {
-        if(modalidade == Modalidade.CHEIA) {
+        if (modalidade == Modalidade.CHEIA) {
             if (valorMesContemplacao == prazo) {
                 return new BigDecimal(0);
             } else {
@@ -133,6 +134,11 @@ public class SimulacaoService {
         } else {
             return new BigDecimal(0); //TODO
         }
+    }
+
+    public BigDecimal gerarValorVenda(BigDecimal valorCreditoAtulizado, int valorMesContemplacao) {
+        double taxaValorVenda = valorMesContemplacao <= 30 ? 0.15 : 0.2;
+        return valorCreditoAtulizado.multiply(new BigDecimal(taxaValorVenda)).setScale(2,RoundingMode.HALF_EVEN);
     }
 
 

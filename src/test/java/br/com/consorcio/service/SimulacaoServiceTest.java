@@ -58,7 +58,7 @@ public class SimulacaoServiceTest {
     }
 
     @Test
-    void testCreditoAtualizado() {
+    void testCreditoAtualizadoEValorVenda() {
         double lance = parametroRequestDTO.getLance() * 0.01;
 
         double creditoAtualizadoOutContempla110 = simulacaoService.gerarCreditoAtualizado(creditoComInccOutContempla110,valorCreditoMaisTaxaAdmOutContempla110, lance).doubleValue();
@@ -70,6 +70,17 @@ public class SimulacaoServiceTest {
         assertEquals(62500.0, creditoAtualizadoJanContempla12);
         assertEquals(321353.83, creditoAtualizadoJanContempla230);
         assertEquals(62500.0, creditoAtualizadoDezContempla1);
+
+        double valorVendaOutContempla110 = simulacaoService.gerarValorVenda(BigDecimal.valueOf(creditoAtualizadoOutContempla110),110).doubleValue();
+        double valorVendaJanContempla12 = simulacaoService.gerarValorVenda(BigDecimal.valueOf(creditoAtualizadoJanContempla12),12).doubleValue();
+        double valorVendaJanContempla230 = simulacaoService.gerarValorVenda(BigDecimal.valueOf(creditoAtualizadoJanContempla230),230).doubleValue();
+        double valorVendaDezContempla1 = simulacaoService.gerarValorVenda(BigDecimal.valueOf(creditoAtualizadoDezContempla1),1).doubleValue();
+
+        assertEquals(27148.67, valorVendaOutContempla110);
+        assertEquals(9375.00, valorVendaJanContempla12);
+        assertEquals(64270.77, valorVendaJanContempla230);
+        assertEquals(9375.00 , valorVendaDezContempla1);
+
     }
 
     @Test
@@ -97,7 +108,6 @@ public class SimulacaoServiceTest {
         assertEquals(6250.0, valorCorridigoJanContempla12);
         assertEquals(292971.26, valorCorridigoJanContempla230);
         assertEquals(520.83, valorCorridigoDezContempla1);
-
     }
 
     @Test
@@ -119,8 +129,6 @@ public class SimulacaoServiceTest {
         assertEquals(364.58, parPosContemplaJanContempla12);
         assertEquals(1874.56, parPosContemplaJanContempla230);
         assertEquals(364.58, parPosContemplaDezContempla1);
-
     }
-
 
 }
