@@ -1,5 +1,6 @@
 package br.com.consorcio.dto;
 
+import br.com.consorcio.dto.enums.Modalidade;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -10,7 +11,7 @@ import java.math.BigDecimal;
 @Setter
 @Builder
 public class ParametroRequestDTO {
-    private String modalidade; // falor fixo CHEIA
+    private Modalidade modalidade; // CHEIA ou MEIA
     private BigDecimal valorCredito; // input
     private Integer prazo; // input em meses
     private Double incc; // inicialmente input( devara buscar online)

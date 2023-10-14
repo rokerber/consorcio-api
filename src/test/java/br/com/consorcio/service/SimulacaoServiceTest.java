@@ -1,6 +1,7 @@
 package br.com.consorcio.service;
 
 import br.com.consorcio.dto.ParametroRequestDTO;
+import br.com.consorcio.dto.enums.Modalidade;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +32,7 @@ public class SimulacaoServiceTest {
     static void setup() {
         simulacaoService = new SimulacaoService();
         parametroRequestDTO = ParametroRequestDTO.builder()
-                .modalidade("CHEIA")
+                .modalidade(Modalidade.CHEIA)
                 .valorCredito(new BigDecimal(100000))
                 .prazo(240)
                 .incc(9.0)
@@ -77,10 +78,10 @@ public class SimulacaoServiceTest {
         double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
 
 
-        double investMenCorrOutContempla110 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmOutContempla110,prazo).doubleValue();
-        double investMenCorrJanContempla12 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmJanContempla12,prazo).doubleValue();
-        double investMenCorrJanContempla230 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmJanContempla230,prazo).doubleValue();
-        double investMenCorrDezContempla1 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmDezContempla1,prazo).doubleValue();
+        double investMenCorrOutContempla110 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmOutContempla110,prazo,2).doubleValue();
+        double investMenCorrJanContempla12 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmJanContempla12,prazo,2).doubleValue();
+        double investMenCorrJanContempla230 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmJanContempla230,prazo,2).doubleValue();
+        double investMenCorrDezContempla1 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmDezContempla1,prazo,2).doubleValue();
 
         assertEquals(1131.19, investMenCorrOutContempla110);
         assertEquals(520.83, investMenCorrJanContempla12);
@@ -96,6 +97,28 @@ public class SimulacaoServiceTest {
         assertEquals(6250.0, valorCorridigoJanContempla12);
         assertEquals(292971.26, valorCorridigoJanContempla230);
         assertEquals(520.83, valorCorridigoDezContempla1);
+
+    }
+
+    @Test
+    void testParcelaPosContemplacao() {
+        Integer prazo = parametroRequestDTO.getPrazo();
+        double lance = parametroRequestDTO.getLance() * 0.01;
+
+        BigDecimal investMenCorrOutContempla110 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmOutContempla110,prazo,10);
+        BigDecimal investMenCorrJanContempla12 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmJanContempla12,prazo,10);
+        BigDecimal investMenCorrJanContempla230 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmJanContempla230,prazo,10);
+        BigDecimal investMenCorrDezContempla1 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmDezContempla1,prazo,10);
+
+        double parPosContemplaOutContempla110 = simulacaoService.gerarParcelaPosContemplacao(investMenCorrOutContempla110,Modalidade.CHEIA,110,prazo,lance).doubleValue();
+        double parPosContemplaJanContempla12 = simulacaoService.gerarParcelaPosContemplacao(investMenCorrJanContempla12,Modalidade.CHEIA,12,prazo,lance).doubleValue();
+        double parPosContemplaJanContempla230 = simulacaoService.gerarParcelaPosContemplacao(investMenCorrJanContempla230,Modalidade.CHEIA,230,prazo,lance).doubleValue();
+        double parPosContemplaDezContempla1 = simulacaoService.gerarParcelaPosContemplacao(investMenCorrDezContempla1,Modalidade.CHEIA,1,prazo,lance).doubleValue();
+
+        assertEquals(791.84, parPosContemplaOutContempla110);
+        assertEquals(364.58, parPosContemplaJanContempla12);
+        assertEquals(1874.56, parPosContemplaJanContempla230);
+        assertEquals(364.58, parPosContemplaDezContempla1);
 
     }
 
