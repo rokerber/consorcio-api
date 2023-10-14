@@ -36,6 +36,8 @@ public class SimulacaoService {
             BigDecimal valorCreditoAtualizado = gerarCreditoAtualizado(creditoComIncc, valorCreditoMaisTaxaAdm,lance);
             BigDecimal investimentoMensalCorrigidoEscala2 = gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdm, prazo,2);
             BigDecimal investimentoMensalCorrigidoEscala10 = gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdm, prazo,10);
+            BigDecimal valorInvestidoCorrigido = gerarValorInvestidoCorrigido(valorCreditoList,taxaAdm,prazo);
+            BigDecimal valorVenda = (gerarValorVenda(valorCreditoAtualizado,valorMesContemplacao));
 
             simulacaoDTOList.add(SimulacaoDTO.builder()
                     .cota(i)
@@ -43,10 +45,10 @@ public class SimulacaoService {
                     .formaContemplacao("SORTEIO")
                     .creditoAtualizado(valorCreditoAtualizado)
                     .investimentoMensalCorrigido(investimentoMensalCorrigidoEscala2)
-                    .valorInvestidoCorrigido(gerarValorInvestidoCorrigido(valorCreditoList,taxaAdm,prazo))
+                    .valorInvestidoCorrigido(valorInvestidoCorrigido)
                     .parcelaPosContemplacao(gerarParcelaPosContemplacao(investimentoMensalCorrigidoEscala10,modalidade,valorMesContemplacao,prazo,lance))
-                    .valorVenda(gerarValorVenda(valorCreditoAtualizado,valorMesContemplacao))
-                    .ir(new BigDecimal(123))
+                    .valorVenda(valorVenda)
+                    .ir(gerarIR(valorVenda,valorInvestidoCorrigido,valorMesContemplacao))
                     .build());
         }
         return simulacaoDTOList;
@@ -132,13 +134,33 @@ public class SimulacaoService {
                 return investimentoMensalCorrigido.subtract(investMenCorrVezesLance).setScale(2,RoundingMode.HALF_EVEN);
             }
         } else {
-            return new BigDecimal(0); //TODO
+            return BigDecimal.ZERO; //TODO
         }
     }
 
     public BigDecimal gerarValorVenda(BigDecimal valorCreditoAtulizado, int valorMesContemplacao) {
         double taxaValorVenda = valorMesContemplacao <= 30 ? 0.15 : 0.2;
         return valorCreditoAtulizado.multiply(new BigDecimal(taxaValorVenda)).setScale(2,RoundingMode.HALF_EVEN);
+    }
+
+    public BigDecimal gerarIR(BigDecimal valorDaVenda, BigDecimal valorInvestidoCorrigido, int mesContemplacao) {
+        double taxaIR;
+        double retorno = 35000.0;
+        if (mesContemplacao <= 6) {
+            taxaIR = 0.225;
+        } else if (mesContemplacao <= 12) {
+            taxaIR = 0.2;
+        } else if (mesContemplacao <= 24) {
+            taxaIR = 0.175;
+        } else {
+            taxaIR = 0.15;
+        }
+        BigDecimal valorDaVendaMenosValorInvestido = valorDaVenda.subtract(valorInvestidoCorrigido);
+        if (valorDaVendaMenosValorInvestido.compareTo(new BigDecimal(retorno)) > 0) {
+            return valorDaVendaMenosValorInvestido.multiply(new BigDecimal(taxaIR)).setScale(2,RoundingMode.HALF_EVEN);
+        } else {
+            return BigDecimal.ZERO;
+        }
     }
 
 
