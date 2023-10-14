@@ -145,7 +145,7 @@ public class SimulacaoService {
 
     public BigDecimal gerarIR(BigDecimal valorDaVenda, BigDecimal valorInvestidoCorrigido, int mesContemplacao) {
         double taxaIR;
-        double retorno = 35000.0;
+        double retorno = 30000.0;
         if (mesContemplacao <= 6) {
             taxaIR = 0.225;
         } else if (mesContemplacao <= 12) {
