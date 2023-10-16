@@ -19,4 +19,5 @@ public class SimulacaoDTO {
     private BigDecimal parcelaPosContemplacao;
     private BigDecimal valorVenda;
     private BigDecimal ir;
+    private BigDecimal lucroLiquido;
 }
