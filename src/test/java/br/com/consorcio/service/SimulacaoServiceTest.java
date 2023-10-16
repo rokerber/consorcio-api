@@ -134,7 +134,7 @@ public class SimulacaoServiceTest {
     }
 
     @Test
-    void testGerarIR() {
+    void testGerarIRELucroLiquidoERetornoSobreCapitalInvestido() {
         double lance = parametroRequestDTO.getLance() * 0.01;
         Integer prazo = parametroRequestDTO.getPrazo();
         double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
@@ -144,26 +144,49 @@ public class SimulacaoServiceTest {
         BigDecimal creditoAtualizadoJanContempla230 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla230,valorCreditoMaisTaxaAdmJanContempla230,lance);
         BigDecimal creditoAtualizadoDezContempla1 = simulacaoService.gerarCreditoAtualizado(creditoComInccDezContempla1,valorCreditoMaisTaxaAdmDezContempla1,lance);
 
-        BigDecimal valorVendaOutContempla110 = simulacaoService.gerarValorVenda(creditoAtualizadoOutContempla110,110,ESCALA2);
-        BigDecimal valorVendaJanContempla12 = simulacaoService.gerarValorVenda(creditoAtualizadoJanContempla12,12,ESCALA2);
-        BigDecimal valorVendaJanContempla230 = simulacaoService.gerarValorVenda(creditoAtualizadoJanContempla230,230,ESCALA2);
-        BigDecimal valorVendaDezContempla1 = simulacaoService.gerarValorVenda(creditoAtualizadoDezContempla1,1,ESCALA2);
+        BigDecimal valorVendaOutContempla110 = simulacaoService.gerarValorVenda(creditoAtualizadoOutContempla110,110,ESCALA10);
+        BigDecimal valorVendaJanContempla12 = simulacaoService.gerarValorVenda(creditoAtualizadoJanContempla12,12,ESCALA10);
+        BigDecimal valorVendaJanContempla230 = simulacaoService.gerarValorVenda(creditoAtualizadoJanContempla230,230,ESCALA10);
+        BigDecimal valorVendaDezContempla1 = simulacaoService.gerarValorVenda(creditoAtualizadoDezContempla1,1,ESCALA10);
 
-        BigDecimal valorCorridigoOutContempla110 = simulacaoService.gerarValorInvestidoCorrigido(valCredOutContempla110List,taxaAdm,prazo,ESCALA2);
-        BigDecimal valorCorridigoJanContempla12 = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla12List,taxaAdm,prazo,ESCALA2);
-        BigDecimal valorCorridigoJanContempla230 = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla230List,taxaAdm,prazo,ESCALA2);
-        BigDecimal valorCorridigoDezContempla1 = simulacaoService.gerarValorInvestidoCorrigido(valCredDezContempla1List,taxaAdm,prazo,ESCALA2);
+        BigDecimal valorCorridigoOutContempla110 = simulacaoService.gerarValorInvestidoCorrigido(valCredOutContempla110List,taxaAdm,prazo,ESCALA10);
+        BigDecimal valorCorridigoJanContempla12 = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla12List,taxaAdm,prazo,ESCALA10);
+        BigDecimal valorCorridigoJanContempla230 = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla230List,taxaAdm,prazo,ESCALA10);
+        BigDecimal valorCorridigoDezContempla1 = simulacaoService.gerarValorInvestidoCorrigido(valCredDezContempla1List,taxaAdm,prazo,ESCALA10);
 
-        double valorIROutContempla110 = simulacaoService.gerarIR(valorVendaOutContempla110,valorCorridigoOutContempla110,110,ESCALA2).doubleValue();
-        double valorIRJanContempla12 = simulacaoService.gerarIR(valorVendaJanContempla12,valorCorridigoJanContempla12,12,ESCALA2).doubleValue();
-        double valorIRJanContempla230 = simulacaoService.gerarIR(valorVendaJanContempla230,valorCorridigoJanContempla230,230,ESCALA2).doubleValue();
-        double valorIRDezContempla1 = simulacaoService.gerarIR(valorVendaDezContempla1,valorCorridigoDezContempla1,1,ESCALA2).doubleValue();
+        BigDecimal valorIROutContempla110 = simulacaoService.gerarIR(valorVendaOutContempla110,valorCorridigoOutContempla110,110,ESCALA10);
+        BigDecimal valorIRJanContempla12 = simulacaoService.gerarIR(valorVendaJanContempla12,valorCorridigoJanContempla12,12,ESCALA10);
+        BigDecimal valorIRJanContempla230 = simulacaoService.gerarIR(valorVendaJanContempla230,valorCorridigoJanContempla230,230,ESCALA10);
+        BigDecimal valorIRDezContempla1Escala2 = simulacaoService.gerarIR(valorVendaDezContempla1,valorCorridigoDezContempla1,1,ESCALA2);
 
-        assertEquals(0.0, valorIROutContempla110);
-        assertEquals(0.0, valorIRJanContempla12);
-        assertEquals(0.0, valorIRJanContempla230);
-        assertEquals(9960.94, valorIRDezContempla1);
+        assertEquals(BigDecimal.ZERO, valorIROutContempla110);
+        assertEquals(BigDecimal.ZERO, valorIRJanContempla12);
+        assertEquals(BigDecimal.ZERO, valorIRJanContempla230);
+        assertEquals(new BigDecimal("9960.94"), valorIRDezContempla1Escala2);
+
+        BigDecimal valorIRDezContempla1Escala10 = simulacaoService.gerarIR(valorVendaDezContempla1,valorCorridigoDezContempla1,1,ESCALA10);
+
+        BigDecimal lucroLiquidoOutContempla110 = simulacaoService.gerarLucroLiquido(valorVendaOutContempla110,valorIROutContempla110,valorCorridigoOutContempla110,ESCALA2);
+        BigDecimal lucroLiquidoJanContempla12 = simulacaoService.gerarLucroLiquido(valorVendaJanContempla12,valorIRJanContempla12,valorCorridigoJanContempla12,ESCALA2);
+        BigDecimal lucroLiquidoJanContempla230 = simulacaoService.gerarLucroLiquido(valorVendaJanContempla230,valorIRJanContempla230,valorCorridigoJanContempla230,ESCALA2);
+        BigDecimal lucroLiquidoDezContempla1 = simulacaoService.gerarLucroLiquido(valorVendaDezContempla1,valorIRDezContempla1Escala10,valorCorridigoDezContempla1,ESCALA2);
+
+        assertEquals(new BigDecimal("-309942.25"), lucroLiquidoOutContempla110);
+        assertEquals(new BigDecimal("15625.00"), lucroLiquidoJanContempla12);
+        assertEquals(new BigDecimal("-1143502.48"), lucroLiquidoJanContempla230);
+        assertEquals(new BigDecimal("34309.90"), lucroLiquidoDezContempla1);
+
+        String retornSobCapitalInvestOutContempla110 = simulacaoService.gerarRetornoSobreCapitalInvestido(lucroLiquidoOutContempla110,valorCorridigoOutContempla110);
+        String retornSobCapitalInvestJanContempla12 = simulacaoService.gerarRetornoSobreCapitalInvestido(lucroLiquidoJanContempla12,valorCorridigoJanContempla12);
+        String retornSobCapitalInvestJanContempla230 = simulacaoService.gerarRetornoSobreCapitalInvestido(lucroLiquidoJanContempla230,valorCorridigoJanContempla230);
+        String retornSobCapitalInvestDezContempla1 = simulacaoService.gerarRetornoSobreCapitalInvestido(lucroLiquidoDezContempla1,valorCorridigoDezContempla1);
+
+        assertEquals("-69.54%", retornSobCapitalInvestOutContempla110);
+        assertEquals("50.00%", retornSobCapitalInvestJanContempla12);
+        assertEquals("-78.06%", retornSobCapitalInvestJanContempla230);
+        assertEquals("1317.50%", retornSobCapitalInvestDezContempla1);
 
     }
+
 
 }

@@ -33,7 +33,7 @@ public class SimulacaoService {
         for (int i = 1; i <= COTA; i++) {
             List<BigDecimal> valorCreditoList = new ArrayList<>();
             int valorMesContemplacao = valorMesContemplacao(prazo);
-            BigDecimal creditoComIncc = gerarCreditoComIncc(valorMesContemplacao, incc, valorCredito, 1,valorCreditoList);
+            BigDecimal creditoComIncc = gerarCreditoComIncc(valorMesContemplacao, incc, valorCredito, currentdate.getMonthValue(),valorCreditoList);
             BigDecimal valorCreditoMaisTaxaAdm = gerarValorCreditoMaisTaxaAdm(creditoComIncc, taxaAdm);
             BigDecimal valorCreditoAtualizado = gerarCreditoAtualizado(creditoComIncc, valorCreditoMaisTaxaAdm,lance);
             BigDecimal investimentoMensalCorrigidoEscala2 = gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdm, prazo,ESCALA2);
@@ -44,7 +44,7 @@ public class SimulacaoService {
             BigDecimal valorVendaEscala10 = gerarValorVenda(valorCreditoAtualizado,valorMesContemplacao,ESCALA10);
             BigDecimal valorIREscala2 = gerarIR(valorVendaEscala2,valorInvestidoCorrigidoEscala2,valorMesContemplacao,ESCALA2);
             BigDecimal valorIREscala10 = gerarIR(valorVendaEscala2,valorInvestidoCorrigidoEscala2,valorMesContemplacao,ESCALA10);
-
+            BigDecimal valorLucroLiquidoEscala2 = gerarLucroLiquido(valorVendaEscala10,valorIREscala10,valorInvestidoCorrigidoEscala10,ESCALA2);
 
             simulacaoDTOList.add(SimulacaoDTO.builder()
                     .cota(i)
@@ -56,7 +56,8 @@ public class SimulacaoService {
                     .parcelaPosContemplacao(gerarParcelaPosContemplacao(investimentoMensalCorrigidoEscala10,modalidade,valorMesContemplacao,prazo,lance))
                     .valorVenda(valorVendaEscala2)
                     .ir(valorIREscala2)
-                    .lucroLiquido(gerarLucroLiquido(valorVendaEscala10,valorIREscala10,valorInvestidoCorrigidoEscala10))
+                    .lucroLiquido(valorLucroLiquidoEscala2)
+                    .retornSobCapitalInvest(gerarRetornoSobreCapitalInvestido(valorLucroLiquidoEscala2,valorInvestidoCorrigidoEscala2))
                     .build());
         }
         return simulacaoDTOList;
@@ -171,9 +172,12 @@ public class SimulacaoService {
         }
     }
 
-    public BigDecimal gerarLucroLiquido(BigDecimal valorDaVenda, BigDecimal valorIR, BigDecimal investimentoMesalCorrigido) {
-        return valorDaVenda.subtract(valorIR).subtract(investimentoMesalCorrigido).setScale(2,RoundingMode.HALF_EVEN);
+    public BigDecimal gerarLucroLiquido(BigDecimal valorDaVenda, BigDecimal valorIR, BigDecimal valorInvestidoCorrigido, int scale) {
+        return valorDaVenda.subtract(valorIR).subtract(valorInvestidoCorrigido).setScale(scale,RoundingMode.HALF_EVEN);
     }
 
+    public String gerarRetornoSobreCapitalInvestido(BigDecimal lucroLiquido, BigDecimal valorInvestidoCorrigido) {
+        return lucroLiquido.divide(valorInvestidoCorrigido,ESCALA10,RoundingMode.HALF_EVEN).multiply(new BigDecimal(100)).setScale(ESCALA2,RoundingMode.HALF_EVEN).toString().concat("%");
+    }
 
 }
