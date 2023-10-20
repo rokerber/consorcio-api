@@ -1,7 +1,7 @@
 package br.com.consorcio.service;
 
 import br.com.consorcio.dto.ParametroRequestDTO;
-import br.com.consorcio.dto.enums.Modalidade;
+import br.com.consorcio.enums.Modalidade;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

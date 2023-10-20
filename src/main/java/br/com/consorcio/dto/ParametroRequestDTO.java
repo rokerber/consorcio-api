@@ -1,6 +1,6 @@
 package br.com.consorcio.dto;
 
-import br.com.consorcio.dto.enums.Modalidade;
+import br.com.consorcio.enums.Modalidade;
 import lombok.*;
 
 import java.math.BigDecimal;

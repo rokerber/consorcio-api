@@ -2,7 +2,7 @@ package br.com.consorcio.service;
 
 import br.com.consorcio.dto.ParametroRequestDTO;
 import br.com.consorcio.dto.SimulacaoDTO;
-import br.com.consorcio.dto.enums.Modalidade;
+import br.com.consorcio.enums.Modalidade;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
