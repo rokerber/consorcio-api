@@ -2,6 +2,7 @@ package br.com.consorcio.service;
 
 import br.com.consorcio.dto.ParametroRequestDTO;
 import br.com.consorcio.dto.SimulacaoDTO;
+import br.com.consorcio.enums.Estrategia;
 import br.com.consorcio.enums.Modalidade;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,7 @@ public class SimulacaoService {
             BigDecimal valorIREscala2 = gerarIR(valorVendaEscala2, valorInvestidoCorrigidoEscala2, valorMesContemplacao, ESCALA2);
             BigDecimal valorIREscala10 = gerarIR(valorVendaEscala2, valorInvestidoCorrigidoEscala2, valorMesContemplacao, ESCALA10);
             BigDecimal valorLucroLiquidoEscala2 = gerarLucroLiquido(valorVendaEscala10, valorIREscala10, valorInvestidoCorrigidoEscala10, ESCALA2);
+            BigDecimal retornSobCapitalInvest = gerarRetornoSobreCapitalInvestido(valorLucroLiquidoEscala2, valorInvestidoCorrigidoEscala2);
 
             simulacaoDTOList.add(SimulacaoDTO.builder()
                     .cota(i)
@@ -57,7 +59,8 @@ public class SimulacaoService {
                     .valorVenda(valorVendaEscala2)
                     .ir(valorIREscala2)
                     .lucroLiquido(valorLucroLiquidoEscala2)
-                    .retornSobCapitalInvest(gerarRetornoSobreCapitalInvestido(valorLucroLiquidoEscala2, valorInvestidoCorrigidoEscala2))
+                    .retornSobCapitalInvest(retornSobCapitalInvest.toString().concat("%"))
+                            .estrategia(setarEstrategia(retornSobCapitalInvest,valorMesContemplacao,prazo))
                     .build());
         }
         return simulacaoDTOList;
@@ -106,19 +109,19 @@ public class SimulacaoService {
             creditoComIncc = creditoComIncc.subtract(valorCreditoVezesLance);
         }
 
-        return creditoComIncc.setScale(2, RoundingMode.HALF_EVEN);
+        return creditoComIncc.setScale(ESCALA2, RoundingMode.HALF_EVEN);
     }
 
     public BigDecimal gerarInvestimentoMensalCorrigido(BigDecimal valorCreditoMaisTaxaAdm, int prazo, int scale) {
-        return valorCreditoMaisTaxaAdm.divide(new BigDecimal(prazo), scale, RoundingMode.HALF_EVEN);
+        return valorCreditoMaisTaxaAdm.divide(BigDecimal.valueOf(prazo), scale, RoundingMode.HALF_EVEN);
     }
 
     public BigDecimal gerarValorInvestidoCorrigido(List<BigDecimal> valorCreditoList, double taxaAdm, int prazo, int scale) {
-        BigDecimal valorInvestidoCorrigido = new BigDecimal(0);
+        BigDecimal valorInvestidoCorrigido = BigDecimal.ZERO;
         for (BigDecimal credito : valorCreditoList) {
             BigDecimal valorCreditoVezesTaxaAdm = credito.multiply(BigDecimal.valueOf(taxaAdm));
             BigDecimal creditoComInccMaisValorCredito = credito.add(valorCreditoVezesTaxaAdm);
-            BigDecimal valorCreditoMaisTaxaAdmDivididoPrazo = creditoComInccMaisValorCredito.divide(new BigDecimal(prazo), ESCALA10, RoundingMode.HALF_EVEN);
+            BigDecimal valorCreditoMaisTaxaAdmDivididoPrazo = creditoComInccMaisValorCredito.divide(BigDecimal.valueOf(prazo), ESCALA10, RoundingMode.HALF_EVEN);
             valorInvestidoCorrigido = valorInvestidoCorrigido.add(valorCreditoMaisTaxaAdmDivididoPrazo);
         }
         return valorInvestidoCorrigido.setScale(scale, RoundingMode.HALF_EVEN);
@@ -127,10 +130,10 @@ public class SimulacaoService {
     public BigDecimal gerarParcelaPosContemplacao(BigDecimal investimentoMensalCorrigido, Modalidade modalidade, int valorMesContemplacao, int prazo, double lance) {
         if (modalidade == Modalidade.CHEIA) {
             if (valorMesContemplacao == prazo) {
-                return new BigDecimal(0);
+                return BigDecimal.valueOf(0);
             } else {
                 BigDecimal investMenCorrVezesLance = investimentoMensalCorrigido.multiply(BigDecimal.valueOf(lance));
-                return investimentoMensalCorrigido.subtract(investMenCorrVezesLance).setScale(2, RoundingMode.HALF_EVEN);
+                return investimentoMensalCorrigido.subtract(investMenCorrVezesLance).setScale(ESCALA2, RoundingMode.HALF_EVEN);
             }
         } else {
             return BigDecimal.ZERO; //TODO
@@ -162,8 +165,18 @@ public class SimulacaoService {
         return valorDaVenda.subtract(valorIR).subtract(valorInvestidoCorrigido).setScale(scale, RoundingMode.HALF_EVEN);
     }
 
-    public String gerarRetornoSobreCapitalInvestido(BigDecimal lucroLiquido, BigDecimal valorInvestidoCorrigido) {
-        return lucroLiquido.divide(valorInvestidoCorrigido, ESCALA10, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100)).setScale(ESCALA2, RoundingMode.HALF_EVEN).toString().concat("%");
+    public BigDecimal gerarRetornoSobreCapitalInvestido(BigDecimal lucroLiquido, BigDecimal valorInvestidoCorrigido) {
+        return lucroLiquido.divide(valorInvestidoCorrigido, ESCALA10, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100)).setScale(ESCALA2, RoundingMode.HALF_EVEN);
+    }
+
+    public String setarEstrategia(BigDecimal retornSobCapitalInvest, int mesContemplacao, int prazo) {
+        if (mesContemplacao == prazo ) {
+            return Estrategia.PREVTURBINADA.getDescricao();
+        } else if (retornSobCapitalInvest.compareTo(BigDecimal.ZERO) > 0) {
+            return Estrategia.CISRG.getDescricao();
+        } else {
+            return Estrategia.CIPRP.getDescricao();
+        }
     }
 
 }
