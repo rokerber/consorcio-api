@@ -20,4 +20,5 @@ public class ParametroRequestDTO {
     private BigDecimal acima30; // input
     private Double lance; // input
     private BigDecimal selic; // input (deverar buscar online)
+    private Integer mesAtual; // apenas para testes, sera removido no futuro
 }
