@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -27,6 +29,10 @@ public class SimulacaoServiceTest {
     static List<BigDecimal> valCredJanContempla12List = new ArrayList<>();
     static List<BigDecimal> valCredJanContempla230List = new ArrayList<>();
     static List<BigDecimal> valCredDezContempla1List = new ArrayList<>();
+    static Set<BigDecimal> invMenOutContempla110Set = new LinkedHashSet<>();
+    static Set<BigDecimal> invMenJanContempla12Set = new LinkedHashSet<>();
+    static Set<BigDecimal> invMenJanContempla230Set = new LinkedHashSet<>();
+    static Set<BigDecimal> invMenDezContempla1Set = new LinkedHashSet<>();
     private static final int ESCALA2 = 2;
     private static final int ESCALA10 = 10;
 
@@ -63,10 +69,10 @@ public class SimulacaoServiceTest {
     void testCreditoAtualizadoEValorVenda() {
         double lance = parametroRequestDTO.getLance() * 0.01;
 
-        BigDecimal creditoAtualizadoOutContempla110 = simulacaoService.gerarCreditoAtualizado(creditoComInccOutContempla110,valorCreditoMaisTaxaAdmOutContempla110, lance);
-        BigDecimal creditoAtualizadoJanContempla12 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla12,valorCreditoMaisTaxaAdmJanContempla12,lance);
-        BigDecimal creditoAtualizadoJanContempla230 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla230,valorCreditoMaisTaxaAdmJanContempla230,lance);
-        BigDecimal creditoAtualizadoDezContempla1 = simulacaoService.gerarCreditoAtualizado(creditoComInccDezContempla1,valorCreditoMaisTaxaAdmDezContempla1,lance);
+        BigDecimal creditoAtualizadoOutContempla110 = simulacaoService.gerarCreditoAtualizado(creditoComInccOutContempla110,valorCreditoMaisTaxaAdmOutContempla110,lance,ESCALA2);
+        BigDecimal creditoAtualizadoJanContempla12 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla12,valorCreditoMaisTaxaAdmJanContempla12,lance,ESCALA2);
+        BigDecimal creditoAtualizadoJanContempla230 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla230,valorCreditoMaisTaxaAdmJanContempla230,lance,ESCALA2);
+        BigDecimal creditoAtualizadoDezContempla1 = simulacaoService.gerarCreditoAtualizado(creditoComInccDezContempla1,valorCreditoMaisTaxaAdmDezContempla1,lance,ESCALA2);
 
         assertEquals(new BigDecimal("678716.65"), creditoAtualizadoOutContempla110);
         assertEquals(new BigDecimal("312500.00"), creditoAtualizadoJanContempla12);
@@ -110,20 +116,20 @@ public class SimulacaoServiceTest {
         assertEquals(new BigDecimal("6694.87"), investMenCorrJanContempla230Meia);
         assertEquals(new BigDecimal("1302.08"), investMenCorrDezContempla1Meia);
 
-        BigDecimal valorCorridigoOutContempla110Cheia = simulacaoService.gerarValorInvestidoCorrigido(valCredOutContempla110List,taxaAdm,prazo,ESCALA2,Modalidade.CHEIA);
-        BigDecimal valorCorridigoJanContempla12Cheia = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla12List,taxaAdm,prazo,ESCALA2,Modalidade.CHEIA);
-        BigDecimal valorCorridigoJanContempla230Cheia = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla230List,taxaAdm,prazo,ESCALA2,Modalidade.CHEIA);
-        BigDecimal valorCorridigoDezContempla1Cheia = simulacaoService.gerarValorInvestidoCorrigido(valCredDezContempla1List,taxaAdm,prazo,ESCALA2,Modalidade.CHEIA);
+        BigDecimal valorCorridigoOutContempla110Cheia = simulacaoService.gerarValorInvestidoCorrigido(valCredOutContempla110List,invMenOutContempla110Set,taxaAdm,prazo,ESCALA2,Modalidade.CHEIA);
+        BigDecimal valorCorridigoJanContempla12Cheia = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla12List,invMenJanContempla12Set,taxaAdm,prazo,ESCALA2,Modalidade.CHEIA);
+        BigDecimal valorCorridigoJanContempla230Cheia = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla230List,invMenJanContempla230Set,taxaAdm,prazo,ESCALA2,Modalidade.CHEIA);
+        BigDecimal valorCorridigoDezContempla1Cheia = simulacaoService.gerarValorInvestidoCorrigido(valCredDezContempla1List,invMenDezContempla1Set,taxaAdm,prazo,ESCALA2,Modalidade.CHEIA);
 
         assertEquals(new BigDecimal("445685.58"), valorCorridigoOutContempla110Cheia);
         assertEquals(new BigDecimal("31250.00"), valorCorridigoJanContempla12Cheia);
         assertEquals(new BigDecimal("1464856.31"), valorCorridigoJanContempla230Cheia);
         assertEquals(new BigDecimal("2604.17"), valorCorridigoDezContempla1Cheia);
 
-        BigDecimal valorCorridigoOutContempla110Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredOutContempla110List,taxaAdm,prazo,ESCALA2,Modalidade.MEIA);
-        BigDecimal valorCorridigoJanContempla12Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla12List,taxaAdm,prazo,ESCALA2,Modalidade.MEIA);
-        BigDecimal valorCorridigoJanContempla230Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla230List,taxaAdm,prazo,ESCALA2,Modalidade.MEIA);
-        BigDecimal valorCorridigoDezContempla1Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredDezContempla1List,taxaAdm,prazo,ESCALA2,Modalidade.MEIA);
+        BigDecimal valorCorridigoOutContempla110Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredOutContempla110List,invMenOutContempla110Set,taxaAdm,prazo,ESCALA2,Modalidade.MEIA);
+        BigDecimal valorCorridigoJanContempla12Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla12List,invMenJanContempla12Set,taxaAdm,prazo,ESCALA2,Modalidade.MEIA);
+        BigDecimal valorCorridigoJanContempla230Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla230List,invMenJanContempla230Set,taxaAdm,prazo,ESCALA2,Modalidade.MEIA);
+        BigDecimal valorCorridigoDezContempla1Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredDezContempla1List,invMenDezContempla1Set,taxaAdm,prazo,ESCALA2,Modalidade.MEIA);
 
         assertEquals(BigDecimal.valueOf(222842.79),valorCorridigoOutContempla110Meia);
         assertEquals(new BigDecimal("15625.00"), valorCorridigoJanContempla12Meia);
@@ -135,21 +141,38 @@ public class SimulacaoServiceTest {
     void testParcelaPosContemplacao() {
         Integer prazo = parametroRequestDTO.getPrazo();
         double lance = parametroRequestDTO.getLance() * 0.01;
+        double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
+
 
         BigDecimal investMenCorrOutContempla110 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmOutContempla110,prazo,ESCALA10,Modalidade.CHEIA);
         BigDecimal investMenCorrJanContempla12 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmJanContempla12,prazo,ESCALA10,Modalidade.CHEIA);
         BigDecimal investMenCorrJanContempla230 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmJanContempla230,prazo,ESCALA10,Modalidade.CHEIA);
         BigDecimal investMenCorrDezContempla1 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdmDezContempla1,prazo,ESCALA10,Modalidade.CHEIA);
 
-        BigDecimal parPosContemplaOutContempla110 = simulacaoService.gerarParcelaPosContemplacao(investMenCorrOutContempla110,Modalidade.CHEIA,110,prazo,lance);
-        BigDecimal parPosContemplaJanContempla12 = simulacaoService.gerarParcelaPosContemplacao(investMenCorrJanContempla12,Modalidade.CHEIA,12,prazo,lance);
-        BigDecimal parPosContemplaJanContempla230 = simulacaoService.gerarParcelaPosContemplacao(investMenCorrJanContempla230,Modalidade.CHEIA,230,prazo,lance);
-        BigDecimal parPosContemplaDezContempla1 = simulacaoService.gerarParcelaPosContemplacao(investMenCorrDezContempla1,Modalidade.CHEIA,1,prazo,lance);
+        BigDecimal valorCorridigoOutContempla110Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredOutContempla110List,invMenOutContempla110Set,taxaAdm,prazo,ESCALA10,Modalidade.MEIA);
+        BigDecimal valorCorridigoJanContempla12Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla12List,invMenJanContempla12Set,taxaAdm,prazo,ESCALA10,Modalidade.MEIA);
+        BigDecimal valorCorridigoJanContempla230Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla230List,invMenJanContempla230Set,taxaAdm,prazo,ESCALA10,Modalidade.MEIA);
+        BigDecimal valorCorridigoDezContempla1Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredDezContempla1List,invMenDezContempla1Set,taxaAdm,prazo,ESCALA10,Modalidade.MEIA);
 
-        assertEquals(new BigDecimal("3959.18"), parPosContemplaOutContempla110);
-        assertEquals(new BigDecimal("1822.92"), parPosContemplaJanContempla12);
-        assertEquals(new BigDecimal("9372.82"), parPosContemplaJanContempla230);
-        assertEquals(new BigDecimal("1822.92"), parPosContemplaDezContempla1);
+        BigDecimal parPosContemplaOutContempla110Cheia = simulacaoService.gerarParcelaPosContemplacao(investMenCorrOutContempla110,invMenOutContempla110Set,valorCorridigoOutContempla110Meia,Modalidade.CHEIA,110,prazo,lance,taxaAdm);
+        BigDecimal parPosContemplaJanContempla12Cheia = simulacaoService.gerarParcelaPosContemplacao(investMenCorrJanContempla12,invMenJanContempla12Set,valorCorridigoJanContempla12Meia,Modalidade.CHEIA,12,prazo,lance,taxaAdm);
+        BigDecimal parPosContemplaJanContempla230Cheia = simulacaoService.gerarParcelaPosContemplacao(investMenCorrJanContempla230,invMenJanContempla230Set,valorCorridigoJanContempla230Meia,Modalidade.CHEIA,230,prazo,lance,taxaAdm);
+        BigDecimal parPosContemplaDezContempla1Cheia = simulacaoService.gerarParcelaPosContemplacao(investMenCorrDezContempla1,invMenDezContempla1Set,valorCorridigoDezContempla1Meia,Modalidade.CHEIA,1,prazo,lance,taxaAdm);
+
+        assertEquals(new BigDecimal("3959.18"), parPosContemplaOutContempla110Cheia);
+        assertEquals(new BigDecimal("1822.92"), parPosContemplaJanContempla12Cheia);
+        assertEquals(new BigDecimal("9372.82"), parPosContemplaJanContempla230Cheia);
+        assertEquals(new BigDecimal("1822.92"), parPosContemplaDezContempla1Cheia);
+
+        BigDecimal parPosContemplaOutContempla110Meia = simulacaoService.gerarParcelaPosContemplacao(investMenCorrOutContempla110,invMenOutContempla110Set,valorCorridigoOutContempla110Meia,Modalidade.MEIA,110,prazo,lance,taxaAdm);
+        BigDecimal parPosContemplaJanContempla12Meia = simulacaoService.gerarParcelaPosContemplacao(investMenCorrJanContempla12,invMenJanContempla12Set,valorCorridigoJanContempla12Meia,Modalidade.MEIA,12,prazo,lance,taxaAdm);
+        BigDecimal parPosContemplaJanContempla230Meia = simulacaoService.gerarParcelaPosContemplacao(investMenCorrJanContempla230,invMenJanContempla230Set,valorCorridigoJanContempla230Meia,Modalidade.MEIA,230,prazo,lance,taxaAdm);
+        BigDecimal parPosContemplaDezContempla1Meia = simulacaoService.gerarParcelaPosContemplacao(investMenCorrDezContempla1,invMenDezContempla1Set,valorCorridigoDezContempla1Meia,Modalidade.MEIA,1,prazo,lance,taxaAdm);
+
+        assertEquals(new BigDecimal("4496.96"), parPosContemplaOutContempla110Meia);
+        assertEquals(new BigDecimal("1850.33"), parPosContemplaJanContempla12Meia);
+        assertEquals(new BigDecimal("38669.95"), parPosContemplaJanContempla230Meia);
+        assertEquals(new BigDecimal("1825.10"), parPosContemplaDezContempla1Meia);
     }
 
     @Test
@@ -158,20 +181,20 @@ public class SimulacaoServiceTest {
         Integer prazo = parametroRequestDTO.getPrazo();
         double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
 
-        BigDecimal creditoAtualizadoOutContempla110 = simulacaoService.gerarCreditoAtualizado(creditoComInccOutContempla110,valorCreditoMaisTaxaAdmOutContempla110, lance);
-        BigDecimal creditoAtualizadoJanContempla12 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla12,valorCreditoMaisTaxaAdmJanContempla12,lance);
-        BigDecimal creditoAtualizadoJanContempla230 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla230,valorCreditoMaisTaxaAdmJanContempla230,lance);
-        BigDecimal creditoAtualizadoDezContempla1 = simulacaoService.gerarCreditoAtualizado(creditoComInccDezContempla1,valorCreditoMaisTaxaAdmDezContempla1,lance);
+        BigDecimal creditoAtualizadoOutContempla110 = simulacaoService.gerarCreditoAtualizado(creditoComInccOutContempla110,valorCreditoMaisTaxaAdmOutContempla110, lance,ESCALA10);
+        BigDecimal creditoAtualizadoJanContempla12 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla12,valorCreditoMaisTaxaAdmJanContempla12,lance,ESCALA10);
+        BigDecimal creditoAtualizadoJanContempla230 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla230,valorCreditoMaisTaxaAdmJanContempla230,lance,ESCALA10);
+        BigDecimal creditoAtualizadoDezContempla1 = simulacaoService.gerarCreditoAtualizado(creditoComInccDezContempla1,valorCreditoMaisTaxaAdmDezContempla1,lance,ESCALA10);
 
         BigDecimal valorVendaOutContempla110 = simulacaoService.gerarValorVenda(creditoAtualizadoOutContempla110,110,ESCALA10);
         BigDecimal valorVendaJanContempla12 = simulacaoService.gerarValorVenda(creditoAtualizadoJanContempla12,12,ESCALA10);
         BigDecimal valorVendaJanContempla230 = simulacaoService.gerarValorVenda(creditoAtualizadoJanContempla230,230,ESCALA10);
         BigDecimal valorVendaDezContempla1 = simulacaoService.gerarValorVenda(creditoAtualizadoDezContempla1,1,ESCALA10);
 
-        BigDecimal valorCorridigoOutContempla110 = simulacaoService.gerarValorInvestidoCorrigido(valCredOutContempla110List,taxaAdm,prazo,ESCALA10,Modalidade.CHEIA);
-        BigDecimal valorCorridigoJanContempla12 = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla12List,taxaAdm,prazo,ESCALA10,Modalidade.CHEIA);
-        BigDecimal valorCorridigoJanContempla230 = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla230List,taxaAdm,prazo,ESCALA10,Modalidade.CHEIA);
-        BigDecimal valorCorridigoDezContempla1 = simulacaoService.gerarValorInvestidoCorrigido(valCredDezContempla1List,taxaAdm,prazo,ESCALA10,Modalidade.CHEIA);
+        BigDecimal valorCorridigoOutContempla110 = simulacaoService.gerarValorInvestidoCorrigido(valCredOutContempla110List,invMenOutContempla110Set,taxaAdm,prazo,ESCALA10,Modalidade.CHEIA);
+        BigDecimal valorCorridigoJanContempla12 = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla12List,invMenJanContempla12Set,taxaAdm,prazo,ESCALA10,Modalidade.CHEIA);
+        BigDecimal valorCorridigoJanContempla230 = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla230List,invMenJanContempla230Set,taxaAdm,prazo,ESCALA10,Modalidade.CHEIA);
+        BigDecimal valorCorridigoDezContempla1 = simulacaoService.gerarValorInvestidoCorrigido(valCredDezContempla1List,invMenDezContempla1Set,taxaAdm,prazo,ESCALA10,Modalidade.CHEIA);
 
         BigDecimal valorIROutContempla110 = simulacaoService.gerarIR(valorVendaOutContempla110,valorCorridigoOutContempla110,110,ESCALA10);
         BigDecimal valorIRJanContempla12 = simulacaoService.gerarIR(valorVendaJanContempla12,valorCorridigoJanContempla12,12,ESCALA10);
