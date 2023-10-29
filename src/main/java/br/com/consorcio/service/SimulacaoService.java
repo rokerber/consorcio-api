@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static br.com.consorcio.utils.Util.getRandomNumber;
+import static br.com.consorcio.utils.Util.validaCampos;
 
 @Service
 public class SimulacaoService {
@@ -21,6 +22,7 @@ public class SimulacaoService {
     private static final int ESCALA10 = 10;
 
     public List<SimulacaoDTO> simular(ParametroRequestDTO parametroRequestDTO) {
+        validaCampos(parametroRequestDTO);
         // monta a tabela para retornar
         List<SimulacaoDTO> simulacaoDTOList = new ArrayList<>();
         LocalDate currentdate = LocalDate.now();
@@ -40,12 +42,12 @@ public class SimulacaoService {
             BigDecimal valorCreditoAtualizadoEscala2 = gerarCreditoAtualizado(creditoComIncc, valorCreditoMaisTaxaAdm, lance, ESCALA2);
             BigDecimal investimentoMensalCorrigidoEscala2 = gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdm, prazo, ESCALA2,modalidade);
             BigDecimal investimentoMensalCorrigidoEscala10Cheia = gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdm, prazo, ESCALA10,Modalidade.CHEIA);
-            BigDecimal valorInvestidoCorrigidoEscala2 = gerarValorInvestidoCorrigido(valorCreditoList,investimentoMensalSet, taxaAdm, prazo, ESCALA2,modalidade);
             BigDecimal valorInvestidoCorrigidoEscala10 = gerarValorInvestidoCorrigido(valorCreditoList,investimentoMensalSet, taxaAdm, prazo, ESCALA10,modalidade);
-            BigDecimal valorVendaEscala2 = gerarValorVenda(valorCreditoAtualizadoEscala2, valorMesContemplacao, ESCALA2);
+            BigDecimal valorInvestidoCorrigidoEscala2 = valorInvestidoCorrigidoEscala10.setScale(ESCALA2,RoundingMode.HALF_EVEN);
             BigDecimal valorVendaEscala10 = gerarValorVenda(valorCreditoAtualizadoEscala2, valorMesContemplacao, ESCALA10);
-            BigDecimal valorIREscala2 = gerarIR(valorVendaEscala2, valorInvestidoCorrigidoEscala2, valorMesContemplacao, ESCALA2);
+            BigDecimal valorVendaEscala2 = valorVendaEscala10.setScale(ESCALA2,RoundingMode.HALF_EVEN);
             BigDecimal valorIREscala10 = gerarIR(valorVendaEscala2, valorInvestidoCorrigidoEscala2, valorMesContemplacao, ESCALA10);
+            BigDecimal valorIREscala2 = valorIREscala10.setScale(ESCALA2,RoundingMode.HALF_EVEN);
             BigDecimal valorLucroLiquidoEscala2 = gerarLucroLiquido(valorVendaEscala10, valorIREscala10, valorInvestidoCorrigidoEscala10, ESCALA2);
             BigDecimal retornSobCapitalInvest = gerarRetornoSobreCapitalInvestido(valorLucroLiquidoEscala2, valorInvestidoCorrigidoEscala2);
 
@@ -61,7 +63,7 @@ public class SimulacaoService {
                     .ir(valorIREscala2)
                     .lucroLiquido(valorLucroLiquidoEscala2)
                     .retornSobCapitalInvest(retornSobCapitalInvest.toString().concat("%"))
-                            .estrategia(setarEstrategia(retornSobCapitalInvest,valorMesContemplacao,prazo))
+                    .estrategia(setarEstrategia(retornSobCapitalInvest,valorMesContemplacao,prazo))
                     .build());
         }
         return simulacaoDTOList;
