@@ -18,8 +18,8 @@ import static br.com.consorcio.utils.Util.validaCampos;
 public class SimulacaoService {
 
     private static final int COTA = 10;
-    private static final int ESCALA2 = 2;
-    private static final int ESCALA10 = 10;
+    public static final int ESCALA2 = 2;
+    public static final int ESCALA10 = 10;
 
     public List<SimulacaoDTO> simular(ParametroRequestDTO parametroRequestDTO) {
         validaCampos(parametroRequestDTO);
