@@ -155,19 +155,7 @@ public class SimulacaoService {
             int mesesRestantes = prazo - valorMesContemplacao;
             BigDecimal saldoDevedor = investimentoMensalCorrigido.multiply(BigDecimal.valueOf(ano));
 
-            BigDecimal anual = BigDecimal.ZERO;
-
-            List<BigDecimal> investimentoMensalList = new ArrayList<>(investimentoMensalSet);
-
-            Collections.sort(investimentoMensalList);
-
-            investimentoMensalList.remove(investimentoMensalList.size() - 1);
-
-            for (BigDecimal invest: investimentoMensalList) {
-                anual = anual.add(invest.multiply(BigDecimal.valueOf(12)));
-            }
-
-            BigDecimal saldoDevedorInicial = saldoDevedor.add(anual);
+            BigDecimal saldoDevedorInicial = getSaldoDevedorInicial(investimentoMensalSet, saldoDevedor);
 
             BigDecimal saldoDevedorInicialMenosLance = saldoDevedorInicial.subtract(saldoDevedorInicial.multiply(BigDecimal.valueOf(lance)));
 
@@ -175,6 +163,22 @@ public class SimulacaoService {
 
             return saldoDevedorFinal.divide(BigDecimal.valueOf(mesesRestantes),ESCALA2,RoundingMode.HALF_EVEN);
         }
+    }
+
+    public BigDecimal getSaldoDevedorInicial(Set<BigDecimal> investimentoMensalSet, BigDecimal saldoDevedor) {
+        BigDecimal anual = BigDecimal.ZERO;
+
+        List<BigDecimal> investimentoMensalList = new ArrayList<>(investimentoMensalSet);
+
+        Collections.sort(investimentoMensalList);
+
+        investimentoMensalList.remove(investimentoMensalList.size() - 1);
+
+        for (BigDecimal invest: investimentoMensalList) {
+            anual = anual.add(invest.multiply(BigDecimal.valueOf(12)));
+        }
+
+        return saldoDevedor.add(anual);
     }
 
     public BigDecimal gerarValorVenda(BigDecimal valorCreditoAtulizado, int valorMesContemplacao, int scale) {

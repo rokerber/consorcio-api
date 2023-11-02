@@ -2,13 +2,16 @@ package br.com.consorcio.service;
 
 import br.com.consorcio.dto.ParametroRequestDTO;
 import br.com.consorcio.dto.TabelaReajusteDTO;
+import br.com.consorcio.enums.Modalidade;
+import org.bouncycastle.math.raw.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.math.RoundingMode;
+import java.util.*;
 
+import static br.com.consorcio.service.SimulacaoService.ESCALA10;
 import static br.com.consorcio.service.SimulacaoService.ESCALA2;
 
 @Service
@@ -21,7 +24,9 @@ public class SimulacaoReajusteService {
 
     public List<TabelaReajusteDTO> simular(ParametroRequestDTO parametroRequestDTO) {
         List<TabelaReajusteDTO> tabelaReajusteDTOList = new ArrayList<>();
-        List<BigDecimal> valorCreditoAtualizadoList = new ArrayList<>();
+        List<Integer> mesesList = new ArrayList<>();
+        Set<BigDecimal> investimentoMensalSet = new LinkedHashSet<>();
+        Modalidade modalidade = parametroRequestDTO.getModalidade();
         int prazo = parametroRequestDTO.getPrazo();
         double incc = parametroRequestDTO.getIncc() * 0.01;
         double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
@@ -32,34 +37,56 @@ public class SimulacaoReajusteService {
         int meses = prazo;
 
         for (int i = 0; i < anos; i++) {
+            if (meses != 0) {
+                mesesList.add(meses);
+            }
+            meses -= TOTALMESESANO;
+        }
+
+        int getValueDeBaixoParaCima = anos;
+        for (int i = 0; i < anos; i++) {
+            --getValueDeBaixoParaCima;
             List<BigDecimal> valorCreditoList = new ArrayList<>();
-            BigDecimal creditoComIncc = simulacaoService.gerarCreditoComIncc(meses,incc,valorCredito,mesAtual,valorCreditoList);
+            BigDecimal creditoComIncc = simulacaoService.gerarCreditoComIncc(mesesList.get(getValueDeBaixoParaCima),incc,valorCredito,mesAtual,valorCreditoList);
             BigDecimal valorCreditoMaisTaxaAdm = simulacaoService.gerarValorCreditoMaisTaxaAdm(creditoComIncc, taxaAdm);
             BigDecimal valorCreditoAtualizadoEscala2 = simulacaoService.gerarCreditoAtualizado(creditoComIncc, valorCreditoMaisTaxaAdm, lance, ESCALA2);
-            valorCreditoAtualizadoList.add(valorCreditoAtualizadoEscala2);
-            meses -= TOTALMESESANO;
-        }
-
-        meses = prazo;
-
-        int getCreditoDeBaixoPraCima = anos;
-        for (int i = 0; i < anos; i++) {
-            --getCreditoDeBaixoPraCima;
+            BigDecimal investimentoMensalCorrigidoEscala10 = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdm, prazo, ESCALA10,modalidade);
+            BigDecimal anualEscala2 = getAnualEscala2(investimentoMensalCorrigidoEscala10);
+            BigDecimal investimentoMensalCorrigidoEscala10Cheia = simulacaoService.gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdm, prazo, ESCALA10,Modalidade.CHEIA);
+            BigDecimal investimentoMensalCorrigidoEscala2Cheia = investimentoMensalCorrigidoEscala10Cheia.setScale(ESCALA2,RoundingMode.HALF_EVEN);
+            BigDecimal anualEscala2Cheia = getAnualEscala2Cheia(investimentoMensalCorrigidoEscala10Cheia);
+            BigDecimal investimentoMensalCorrigidoEscala2 = investimentoMensalCorrigidoEscala10.setScale(ESCALA2,RoundingMode.HALF_EVEN);
+            BigDecimal saldoDevedorEscala10 = getSaldoDevedorEscala10(mesesList, i, investimentoMensalCorrigidoEscala10Cheia);
+            BigDecimal saldoDevedorEscala2 = saldoDevedorEscala10.setScale(ESCALA2,RoundingMode.HALF_EVEN);
+            BigDecimal valorInvestidoCorrigidoEscala2 = simulacaoService.gerarValorInvestidoCorrigido(valorCreditoList,investimentoMensalSet, taxaAdm, prazo, ESCALA10,modalidade).setScale(ESCALA2,RoundingMode.HALF_EVEN);
+            BigDecimal saldoDevedorInicialEscala2 = simulacaoService.getSaldoDevedorInicial(investimentoMensalSet,saldoDevedorEscala10).setScale(ESCALA2,RoundingMode.HALF_EVEN);
+            BigDecimal valorInvestidoCorrigidoEscala2Cheia = simulacaoService.gerarValorInvestidoCorrigido(valorCreditoList,investimentoMensalSet, taxaAdm, prazo, ESCALA10,Modalidade.CHEIA).setScale(ESCALA2,RoundingMode.HALF_EVEN);
             tabelaReajusteDTOList.add(TabelaReajusteDTO.builder()
-                            .mes(meses)
+                            .mes(mesesList.get(i))
                             .ano(i)
-                            .credito(valorCreditoAtualizadoList.get(getCreditoDeBaixoPraCima))
-                            .saldoDevedor(BigDecimal.ZERO)
-                            .acumuladoMeiaParcela(BigDecimal.ZERO)
-                            .meiaParcela(BigDecimal.ZERO)
-                            .anual(BigDecimal.ZERO)
-                            .parcelaCheia(BigDecimal.ZERO)
-                            .anualCheia(BigDecimal.ZERO)
-                            .acumuladoParcelaCheia(BigDecimal.ZERO)
-                            .totalAserPago(BigDecimal.ZERO)
+                            .credito(valorCreditoAtualizadoEscala2)
+                            .saldoDevedor(saldoDevedorEscala2)
+                            .acumuladoMeiaParcela(valorInvestidoCorrigidoEscala2)
+                            .meiaParcela(investimentoMensalCorrigidoEscala2)
+                            .anual(anualEscala2)
+                            .parcelaCheia(investimentoMensalCorrigidoEscala2Cheia)
+                            .anualCheia(anualEscala2Cheia)
+                            .acumuladoParcelaCheia(valorInvestidoCorrigidoEscala2Cheia)
+                            .totalAserPago(saldoDevedorInicialEscala2)
                     .build());
-            meses -= TOTALMESESANO;
         }
         return tabelaReajusteDTOList;
+    }
+
+    private BigDecimal getSaldoDevedorEscala10(List<Integer> mesesList, int index, BigDecimal investimentoMensalCorrigidoEscala10Cheia) {
+        return investimentoMensalCorrigidoEscala10Cheia.multiply(BigDecimal.valueOf(mesesList.get(index))).setScale(ESCALA10, RoundingMode.HALF_EVEN);
+    }
+
+    private BigDecimal getAnualEscala2Cheia(BigDecimal investimentoMensalCorrigidoEscala10Cheia) {
+        return investimentoMensalCorrigidoEscala10Cheia.multiply(BigDecimal.valueOf(TOTALMESESANO)).setScale(ESCALA2, RoundingMode.HALF_EVEN);
+    }
+
+    private BigDecimal getAnualEscala2(BigDecimal investimentoMensalCorrigidoEscala10) {
+        return investimentoMensalCorrigidoEscala10.multiply(BigDecimal.valueOf(TOTALMESESANO)).setScale(ESCALA2, RoundingMode.HALF_EVEN);
     }
 }
