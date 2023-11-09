@@ -11,10 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,6 +25,7 @@ public class SimulacaoReajusteResource {
     private final SimulacaoReajusteService simulacaoReajusteService;
 
     @PostMapping
+    @CrossOrigin
     @Operation(summary = "Simula todos os anos de reajuste do consorcio")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "422", description = "Erro na validação dos campos",
