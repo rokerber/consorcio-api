@@ -1,7 +1,7 @@
 package br.com.consorcio.utils;
 
 import br.com.consorcio.dto.ParametroRequestDTO;
-import br.com.consorcio.service.exceptions.DataIntegrityViolationException;
+import br.com.consorcio.common.DataIntegrityViolationException;
 
 import java.math.BigDecimal;
 

@@ -1,8 +1,6 @@
-package br.com.consorcio.resource.exceptions;
+package br.com.consorcio.common;
 
 
-import br.com.consorcio.service.exceptions.DataIntegrityViolationException;
-import br.com.consorcio.service.exceptions.ObjectNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

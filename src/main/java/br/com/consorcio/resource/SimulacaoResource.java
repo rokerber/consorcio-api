@@ -2,6 +2,8 @@ package br.com.consorcio.resource;
 
 import br.com.consorcio.dto.ParametroRequestDTO;
 import br.com.consorcio.dto.SimulacaoDTO;
+import br.com.consorcio.dto.TabelaReajusteDTO;
+import br.com.consorcio.service.SimulacaoReajusteService;
 import br.com.consorcio.service.SimulacaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,6 +25,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class SimulacaoResource {
 
     private final SimulacaoService simulacaoService;
+    private final SimulacaoReajusteService simulacaoReajusteService;
 
     @PostMapping
     @CrossOrigin
@@ -32,6 +35,14 @@ public class SimulacaoResource {
                     content = @Content) })
     public ResponseEntity<List<SimulacaoDTO>> simular(@Valid @RequestBody @Parameter(description = "Parametros de entrada para simular o consorcio") ParametroRequestDTO parametroRequestDTO){
         return ok(simulacaoService.simular(parametroRequestDTO));
+    }
+
+    @PostMapping("/reajuste")
+    @CrossOrigin
+    @Operation(summary = "Simula todos os anos de reajuste do consorcio")
+    @ApiResponses(value = {@ApiResponse(responseCode = "422", description = "Erro na validação dos campos", content = @Content)})
+    public ResponseEntity<List<TabelaReajusteDTO>> reajuste(@Valid @RequestBody @Parameter(description = "Parametros de entrada para simular o reajuste") ParametroRequestDTO parametroRequestDTO) {
+        return ok(simulacaoReajusteService.simular(parametroRequestDTO));
     }
 
 }

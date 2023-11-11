@@ -1,4 +1,4 @@
-package br.com.consorcio.service.exceptions;
+package br.com.consorcio.common;
 
 public class DataIntegrityViolationException extends RuntimeException{
 

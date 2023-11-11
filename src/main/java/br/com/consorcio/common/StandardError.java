@@ -1,4 +1,4 @@
-package br.com.consorcio.resource.exceptions;
+package br.com.consorcio.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
