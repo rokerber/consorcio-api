@@ -28,7 +28,6 @@ public class SimulacaoResource {
     private final SimulacaoReajusteService simulacaoReajusteService;
 
     @PostMapping
-    @CrossOrigin
     @Operation(summary = "Simula um investimento no consorcio com até 10 cotas")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "422", description = "Erro na validação dos campos",
@@ -38,7 +37,6 @@ public class SimulacaoResource {
     }
 
     @PostMapping("/reajuste")
-    @CrossOrigin
     @Operation(summary = "Simula todos os anos de reajuste do consorcio")
     @ApiResponses(value = {@ApiResponse(responseCode = "422", description = "Erro na validação dos campos", content = @Content)})
     public ResponseEntity<List<TabelaReajusteDTO>> reajuste(@Valid @RequestBody @Parameter(description = "Parametros de entrada para simular o reajuste") ParametroRequestDTO parametroRequestDTO) {
