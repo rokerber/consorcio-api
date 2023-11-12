@@ -2,6 +2,7 @@ package br.com.consorcio.utils;
 
 import br.com.consorcio.dto.ParametroRequestDTO;
 import br.com.consorcio.common.DataIntegrityViolationException;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.math.BigDecimal;
 
@@ -14,17 +15,20 @@ public class Util {
         if (parametroRequestDTO.getValorCredito().compareTo(BigDecimal.ZERO) == 0) {
             throw new DataIntegrityViolationException("credito nao pode ser zero");
         }
-        if (parametroRequestDTO.getPrazo() == 0) {
-            throw new DataIntegrityViolationException("prazo nao pode ser zero");
+        if (parametroRequestDTO.getPrazo() == 0 || ObjectUtils.isEmpty(parametroRequestDTO.getPrazo())) {
+            throw new DataIntegrityViolationException("prazo nao pode ser zero ou nulo");
         }
-        if (parametroRequestDTO.getIncc() == 0) {
-            throw new DataIntegrityViolationException("incc nao pode ser zero");
+        if (parametroRequestDTO.getIncc() == 0 || ObjectUtils.isEmpty(parametroRequestDTO.getPrazo())) {
+            throw new DataIntegrityViolationException("incc nao pode ser zero ou nulo");
         }
-        if (parametroRequestDTO.getTaxaAdm() == 0) {
-            throw new DataIntegrityViolationException("taxaAdm nao pode ser zero");
+        if (parametroRequestDTO.getTaxaAdm() == 0 || ObjectUtils.isEmpty(parametroRequestDTO.getPrazo())) {
+            throw new DataIntegrityViolationException("taxaAdm nao pode ser zero ou nulo");
         }
-        if (parametroRequestDTO.getMesAtual() == 0) {
-            throw new DataIntegrityViolationException("mesAtual nao pode ser zero (apenas para testes)");
+        if (parametroRequestDTO.getMesAtual() == 0 || ObjectUtils.isEmpty(parametroRequestDTO.getPrazo())) {
+            throw new DataIntegrityViolationException("mesAtual nao pode ser zero (apenas para testes) ou nulo");
+        }
+        if (ObjectUtils.isEmpty(parametroRequestDTO.getLance())) {
+            throw new DataIntegrityViolationException("lance nao pode ser nulo");
         }
     }
 }
