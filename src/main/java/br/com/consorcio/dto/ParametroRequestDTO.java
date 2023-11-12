@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Builder
 public class ParametroRequestDTO {
     @NotNull(message = "O campo modalidade é requerido")
-    private Modalidade modalidade; // CHEIA ou MEIA
+    private Modalidade modalidade = Modalidade.CHEIA; // CHEIA ou MEIA
     @NotNull(message = "O campo valorCredito é requerido")
     private BigDecimal valorCredito = BigDecimal.ZERO; // input
     @NotNull(message = "O campo prazo é requerido")
