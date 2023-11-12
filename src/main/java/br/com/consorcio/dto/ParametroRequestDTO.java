@@ -15,17 +15,17 @@ public class ParametroRequestDTO {
     @NotNull(message = "O campo modalidade é requerido")
     private Modalidade modalidade; // CHEIA ou MEIA
     @NotNull(message = "O campo valorCredito é requerido")
-    private BigDecimal valorCredito; // input
+    private BigDecimal valorCredito = BigDecimal.ZERO; // input
     @NotNull(message = "O campo prazo é requerido")
-    private Integer prazo; // input em meses
+    private Integer prazo = 0; // input em meses
     @NotNull(message = "O campo incc é requerido (apenas para testes)")
-    private Double incc; // inicialmente input( devara buscar online)
+    private Double incc = 0.0; // inicialmente input( devara buscar online)
     @NotNull(message = "O campo taxaAdm é requerido (apenas para testes)")
-    private Double taxaAdm; // input (devera haver uma tabela com a composicao das taxas)
-    private BigDecimal recompra30; // input
-    private BigDecimal acima30; // input
-    private Double lance; // input
-    private BigDecimal selic; // input (deverar buscar online)
+    private Double taxaAdm = 0.0; // input (devera haver uma tabela com a composicao das taxas)
+    private BigDecimal recompra30 = BigDecimal.ZERO; // input
+    private BigDecimal acima30 =  BigDecimal.ZERO; // input
+    private Double lance = 0.0; // input
+    private BigDecimal selic = BigDecimal.ZERO; // input (deverar buscar online)
     @NotNull(message = "O campo mesAtual é requerido (apenas para testes)")
-    private Integer mesAtual; // apenas para testes, sera removido no futuro
+    private Integer mesAtual = 1; // apenas para testes, sera removido no futuro
 }
