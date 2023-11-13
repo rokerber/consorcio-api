@@ -4,6 +4,7 @@ import br.com.consorcio.dto.ParametroRequestDTO;
 import br.com.consorcio.dto.SimulacaoDTO;
 import br.com.consorcio.enums.Estrategia;
 import br.com.consorcio.enums.Modalidade;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,6 +33,7 @@ public class SimulacaoService {
         int prazo = parametroRequestDTO.getPrazo();
         BigDecimal valorCredito = parametroRequestDTO.getValorCredito();
         Modalidade modalidade = parametroRequestDTO.getModalidade();
+        String formaContemplacao = lance == 0.0 || ObjectUtils.isEmpty(lance) ? "SORTEIO" : "Lance Fixo";
         for (int i = 1; i <= COTA; i++) {
             List<BigDecimal> valorCreditoList = new ArrayList<>();
             Set<BigDecimal> investimentoMensalSet = new HashSet<>();
@@ -54,7 +56,7 @@ public class SimulacaoService {
             simulacaoDTOList.add(SimulacaoDTO.builder()
                     .cota(i)
                     .mesContemplacao(valorMesContemplacao)
-                    .formaContemplacao("SORTEIO")
+                    .formaContemplacao(formaContemplacao)
                     .creditoAtualizado(valorCreditoAtualizadoEscala2)
                     .investimentoMensalCorrigido(investimentoMensalCorrigidoEscala2)
                     .valorInvestidoCorrigido(valorInvestidoCorrigidoEscala2)
@@ -74,27 +76,37 @@ public class SimulacaoService {
     }
 
     public BigDecimal gerarCreditoComIncc(int valorMesContemplacao, double incc, BigDecimal valorCredito, int monthValue, List<BigDecimal> valorCreditoList) {
+        int counter = 0;
         int mesesRestantes = 13 - monthValue;
 
-        // Add valorCredito to valorCreditoList for valorMesContemplacao or mesesRestantes, whichever is smaller
-        int numIterations = Math.min(valorMesContemplacao, mesesRestantes);
-        for (int i = 0; i < numIterations; i++) {
+        // para definir valorInvestidoCorrigido apenas
+        for (int i = 0; i < valorMesContemplacao && i < mesesRestantes; i++) {
             valorCreditoList.add(valorCredito);
         }
 
-        // Calculate the number of additional iterations based on valorMesContemplacao
-        int counter = (valorMesContemplacao - 1) / 12;
+        if (valorMesContemplacao > mesesRestantes) {
+            counter++;
+        }
 
-        // Add valorCredito to valorCreditoList for each additional iteration
+        for (int i = 25 - monthValue; i <= valorMesContemplacao; i += 12) {
+            counter++;
+        }
+
+        int meses = valorMesContemplacao - mesesRestantes;
+
         for (int i = 0; i < counter; i++) {
-            BigDecimal creditoMaisIncc = valorCredito.multiply(BigDecimal.valueOf(incc));
+            BigDecimal creditoMaisIncc = valorCredito.multiply(new BigDecimal(incc));
             valorCredito = valorCredito.add(creditoMaisIncc);
-
-            // Add valorCredito to valorCreditoList for 12 months or remaining months, whichever is smaller
-            int meses = valorMesContemplacao - mesesRestantes - (i * 12);
-            int numMonths = Math.min(meses, 12);
-            for (int y = 0; y < numMonths; y++) {
-                valorCreditoList.add(valorCredito);
+            // para definir valorInvestidoCorrigido apenas
+            if (meses > 12 ) {
+                for (int y = 0; y < 12; y++) {
+                    valorCreditoList.add(valorCredito);
+                }
+                meses = meses - 12;
+            } else {
+                for (int y = 0; y < meses; y++) {
+                    valorCreditoList.add(valorCredito);
+                }
             }
         }
 

@@ -21,10 +21,12 @@ public class SimulacaoServiceTest {
     static BigDecimal creditoComInccJanContempla12;
     static BigDecimal creditoComInccJanContempla230;
     static BigDecimal creditoComInccDezContempla1;
+    static BigDecimal creditoComInccJunContempla44;
     static BigDecimal valorCreditoMaisTaxaAdmOutContempla110;
     static BigDecimal valorCreditoMaisTaxaAdmJanContempla12;
     static BigDecimal valorCreditoMaisTaxaAdmJanContempla230;
     static BigDecimal valorCreditoMaisTaxaAdmDezContempla1;
+    static BigDecimal valorCreditoMaisTaxaAdmJunContempla44;
     static List<BigDecimal> valCredOutContempla110List = new ArrayList<>();
     static List<BigDecimal> valCredJanContempla12List = new ArrayList<>();
     static List<BigDecimal> valCredJanContempla230List = new ArrayList<>();
@@ -63,6 +65,9 @@ public class SimulacaoServiceTest {
 
         creditoComInccDezContempla1 = simulacaoService.gerarCreditoComIncc(1, incc, valorCredito, 12,valCredDezContempla1List);
         valorCreditoMaisTaxaAdmDezContempla1 = simulacaoService.gerarValorCreditoMaisTaxaAdm(creditoComInccDezContempla1,taxaAdm);
+
+        creditoComInccJunContempla44 = simulacaoService.gerarCreditoComIncc(44, incc, valorCredito, 6,valCredDezContempla1List);
+        valorCreditoMaisTaxaAdmJunContempla44 = simulacaoService.gerarValorCreditoMaisTaxaAdm(creditoComInccDezContempla1,taxaAdm);
     }
 
     @Test
@@ -73,11 +78,15 @@ public class SimulacaoServiceTest {
         BigDecimal creditoAtualizadoJanContempla12 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla12,valorCreditoMaisTaxaAdmJanContempla12,lance,ESCALA2);
         BigDecimal creditoAtualizadoJanContempla230 = simulacaoService.gerarCreditoAtualizado(creditoComInccJanContempla230,valorCreditoMaisTaxaAdmJanContempla230,lance,ESCALA2);
         BigDecimal creditoAtualizadoDezContempla1 = simulacaoService.gerarCreditoAtualizado(creditoComInccDezContempla1,valorCreditoMaisTaxaAdmDezContempla1,lance,ESCALA2);
+        BigDecimal creditoAtualizadoJunContempla44 = simulacaoService.gerarCreditoAtualizado(creditoComInccJunContempla44,valorCreditoMaisTaxaAdmJunContempla44,lance,ESCALA2);
+
 
         assertEquals(new BigDecimal("678716.65"), creditoAtualizadoOutContempla110);
         assertEquals(new BigDecimal("312500.00"), creditoAtualizadoJanContempla12);
         assertEquals(new BigDecimal("1606769.14"), creditoAtualizadoJanContempla230);
         assertEquals(new BigDecimal("312500.00"), creditoAtualizadoDezContempla1);
+        assertEquals(new BigDecimal("518290.80"), creditoAtualizadoJunContempla44);
+
 
         BigDecimal valorVendaOutContempla110 = simulacaoService.gerarValorVenda(creditoAtualizadoOutContempla110,110,ESCALA2);
         BigDecimal valorVendaJanContempla12 = simulacaoService.gerarValorVenda(creditoAtualizadoJanContempla12,12,ESCALA2);
@@ -124,7 +133,7 @@ public class SimulacaoServiceTest {
         assertEquals(new BigDecimal("445685.58"), valorCorridigoOutContempla110Cheia);
         assertEquals(new BigDecimal("31250.00"), valorCorridigoJanContempla12Cheia);
         assertEquals(new BigDecimal("1464856.31"), valorCorridigoJanContempla230Cheia);
-        assertEquals(new BigDecimal("2604.17"), valorCorridigoDezContempla1Cheia);
+        assertEquals(new BigDecimal("136169.61"), valorCorridigoDezContempla1Cheia);
 
         BigDecimal valorCorridigoOutContempla110Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredOutContempla110List,invMenOutContempla110Set,taxaAdm,prazo,ESCALA2,Modalidade.MEIA);
         BigDecimal valorCorridigoJanContempla12Meia = simulacaoService.gerarValorInvestidoCorrigido(valCredJanContempla12List,invMenJanContempla12Set,taxaAdm,prazo,ESCALA2,Modalidade.MEIA);
@@ -134,7 +143,7 @@ public class SimulacaoServiceTest {
         assertEquals(BigDecimal.valueOf(222842.79),valorCorridigoOutContempla110Meia);
         assertEquals(new BigDecimal("15625.00"), valorCorridigoJanContempla12Meia);
         assertEquals(new BigDecimal("732428.16"), valorCorridigoJanContempla230Meia);
-        assertEquals(new BigDecimal("1302.08"), valorCorridigoDezContempla1Meia);
+        assertEquals(new BigDecimal("68084.80"), valorCorridigoDezContempla1Meia);
     }
 
     @Test
@@ -172,7 +181,7 @@ public class SimulacaoServiceTest {
         assertEquals(new BigDecimal("4496.96"), parPosContemplaOutContempla110Meia);
         assertEquals(new BigDecimal("1850.33"), parPosContemplaJanContempla12Meia);
         assertEquals(new BigDecimal("38669.95"), parPosContemplaJanContempla230Meia);
-        assertEquals(new BigDecimal("1825.10"), parPosContemplaDezContempla1Meia);
+        assertEquals(new BigDecimal("1598.13"), parPosContemplaDezContempla1Meia);
     }
 
     @Test
@@ -204,7 +213,7 @@ public class SimulacaoServiceTest {
         assertEquals(BigDecimal.ZERO, valorIROutContempla110);
         assertEquals(BigDecimal.ZERO, valorIRJanContempla12);
         assertEquals(BigDecimal.ZERO, valorIRJanContempla230);
-        assertEquals(new BigDecimal("9960.94"), valorIRDezContempla1Escala2);
+        assertEquals(new BigDecimal("0"), valorIRDezContempla1Escala2);
 
         BigDecimal valorIRDezContempla1Escala10 = simulacaoService.gerarIR(valorVendaDezContempla1,valorCorridigoDezContempla1,1,ESCALA10);
 
@@ -216,7 +225,7 @@ public class SimulacaoServiceTest {
         assertEquals(new BigDecimal("-309942.25"), lucroLiquidoOutContempla110);
         assertEquals(new BigDecimal("15625.00"), lucroLiquidoJanContempla12);
         assertEquals(new BigDecimal("-1143502.48"), lucroLiquidoJanContempla230);
-        assertEquals(new BigDecimal("34309.90"), lucroLiquidoDezContempla1);
+        assertEquals(new BigDecimal("-89294.61"), lucroLiquidoDezContempla1);
 
         BigDecimal retornSobCapitalInvestOutContempla110 = simulacaoService.gerarRetornoSobreCapitalInvestido(lucroLiquidoOutContempla110,valorCorridigoOutContempla110);
         BigDecimal retornSobCapitalInvestJanContempla12 = simulacaoService.gerarRetornoSobreCapitalInvestido(lucroLiquidoJanContempla12,valorCorridigoJanContempla12);
@@ -226,7 +235,7 @@ public class SimulacaoServiceTest {
         assertEquals(new BigDecimal("-69.54"), retornSobCapitalInvestOutContempla110);
         assertEquals(new BigDecimal("50.00"), retornSobCapitalInvestJanContempla12);
         assertEquals(new BigDecimal("-78.06"), retornSobCapitalInvestJanContempla230);
-        assertEquals(new BigDecimal("1317.50"), retornSobCapitalInvestDezContempla1);
+        assertEquals(new BigDecimal("-65.58"), retornSobCapitalInvestDezContempla1);
     }
 
     @Test
