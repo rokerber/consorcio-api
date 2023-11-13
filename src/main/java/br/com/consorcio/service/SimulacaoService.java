@@ -88,7 +88,7 @@ public class SimulacaoService {
             counter++;
         }
 
-        for (int i = 25 - monthValue; i <= valorMesContemplacao; i += 12) {
+        for (int i = 26 - monthValue; i <= valorMesContemplacao; i += 12) {
             counter++;
         }
 

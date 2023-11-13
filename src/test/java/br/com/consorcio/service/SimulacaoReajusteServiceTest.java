@@ -3,13 +3,11 @@ package br.com.consorcio.service;
 import br.com.consorcio.dto.ParametroRequestDTO;
 import br.com.consorcio.dto.TabelaReajusteDTO;
 import br.com.consorcio.enums.Modalidade;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
