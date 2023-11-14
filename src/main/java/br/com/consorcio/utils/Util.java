@@ -27,8 +27,5 @@ public class Util {
         if (parametroRequestDTO.getMesAtual() == 0 || ObjectUtils.isEmpty(parametroRequestDTO.getPrazo())) {
             throw new DataIntegrityViolationException("mesAtual nao pode ser zero (apenas para testes) ou nulo");
         }
-        if (ObjectUtils.isEmpty(parametroRequestDTO.getLance())) {
-            throw new DataIntegrityViolationException("lance nao pode ser nulo");
-        }
     }
 }

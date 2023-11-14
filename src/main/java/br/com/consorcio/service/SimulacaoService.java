@@ -27,13 +27,13 @@ public class SimulacaoService {
         // monta a tabela para retornar
         List<SimulacaoDTO> simulacaoDTOList = new ArrayList<>();
         LocalDate currentdate = LocalDate.now();
-        double lance = parametroRequestDTO.getLance() * 0.01;
+        double lance = ObjectUtils.isEmpty(parametroRequestDTO.getLance()) ? 0.0 : parametroRequestDTO.getLance() * 0.01;
         double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
         double incc = parametroRequestDTO.getIncc() * 0.01;
         int prazo = parametroRequestDTO.getPrazo();
         BigDecimal valorCredito = parametroRequestDTO.getValorCredito();
         Modalidade modalidade = parametroRequestDTO.getModalidade();
-        String formaContemplacao = lance == 0.0 || ObjectUtils.isEmpty(lance) ? "SORTEIO" : "Lance Fixo";
+        String formaContemplacao = lance == 0.0 ? "SORTEIO" : "Lance Fixo";
         for (int i = 1; i <= COTA; i++) {
             List<BigDecimal> valorCreditoList = new ArrayList<>();
             Set<BigDecimal> investimentoMensalSet = new HashSet<>();

@@ -3,6 +3,7 @@ package br.com.consorcio.service;
 import br.com.consorcio.dto.ParametroRequestDTO;
 import br.com.consorcio.dto.TabelaReajusteDTO;
 import br.com.consorcio.enums.Modalidade;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bouncycastle.math.raw.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.*;
 
 import static br.com.consorcio.service.SimulacaoService.ESCALA10;
 import static br.com.consorcio.service.SimulacaoService.ESCALA2;
+import static br.com.consorcio.utils.Util.validaCampos;
 
 @Service
 public class SimulacaoReajusteService {
@@ -23,6 +25,8 @@ public class SimulacaoReajusteService {
     private SimulacaoService simulacaoService;
 
     public List<TabelaReajusteDTO> simular(ParametroRequestDTO parametroRequestDTO) {
+        validaCampos(parametroRequestDTO);
+        double lance = ObjectUtils.isEmpty(parametroRequestDTO.getLance()) ? 0.0 : parametroRequestDTO.getLance() * 0.01;
         List<TabelaReajusteDTO> tabelaReajusteDTOList = new ArrayList<>();
         List<Integer> mesesList = new ArrayList<>();
         Set<BigDecimal> investimentoMensalSet = new LinkedHashSet<>();
@@ -30,7 +34,6 @@ public class SimulacaoReajusteService {
         int prazo = parametroRequestDTO.getPrazo();
         double incc = parametroRequestDTO.getIncc() * 0.01;
         double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
-        double lance = parametroRequestDTO.getLance() * 0.01;
         BigDecimal valorCredito = parametroRequestDTO.getValorCredito();
         int mesAtual = parametroRequestDTO.getMesAtual();
         int anos = prazo / TOTALMESESANO;
