@@ -223,12 +223,10 @@ public class SimulacaoService {
     }
 
     public String setarEstrategia(BigDecimal retornSobCapitalInvest, int mesContemplacao, int prazo) {
-        if (mesContemplacao == prazo ) {
-            return Estrategia.PREVTURBINADA.getDescricao();
-        } else if (retornSobCapitalInvest.compareTo(BigDecimal.ZERO) > 0) {
-            return Estrategia.CISRG.getDescricao();
+        if (retornSobCapitalInvest.compareTo(BigDecimal.ZERO) > 0) {
+            return Estrategia.ESTRATEGIAA.getDescricao();
         } else {
-            return Estrategia.CIPRP.getDescricao();
+            return Estrategia.ESTRATEGIAB.getDescricao();
         }
     }
 

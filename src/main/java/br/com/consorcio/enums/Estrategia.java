@@ -7,9 +7,8 @@ import lombok.Getter;
 @Getter
 public enum Estrategia {
 
-    CISRG(0, "CIS-RG"),
-    CIPRP(1, "CIP-RP"),
-    PREVTURBINADA(2, "PREV TURBINADA");
+    ESTRATEGIAA(0, "Estratégia A"),
+    ESTRATEGIAB(1, "Estratégia B");
 
     private final int codigo;
     private final String descricao;
