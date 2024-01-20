@@ -13,19 +13,19 @@ import java.math.BigDecimal;
 @Builder
 public class ParametroRequestDTO {
     @NotNull(message = "O campo modalidade é requerido")
-    private Modalidade modalidade = Modalidade.CHEIA; // CHEIA ou MEIA
+    private Modalidade modalidade = Modalidade.CHEIA;
     @NotNull(message = "O campo valorCredito é requerido")
-    private BigDecimal valorCredito = BigDecimal.ZERO; // input
+    private BigDecimal valorCredito = BigDecimal.ZERO;
     @NotNull(message = "O campo prazo é requerido")
-    private Integer prazo = 0; // input em meses
+    private Integer prazo = 0;
     @NotNull(message = "O campo incc é requerido (apenas para testes)")
-    private Double incc = 0.0; // inicialmente input( devara buscar online)
+    private Double incc = 0.0;
     @NotNull(message = "O campo taxaAdm é requerido (apenas para testes)")
-    private Double taxaAdm = 0.0; // input (devera haver uma tabela com a composicao das taxas)
-    private BigDecimal recompra30 = BigDecimal.ZERO; // input
-    private BigDecimal acima30 =  BigDecimal.ZERO; // input
-    private Double lance = 0.0; // input
-    private BigDecimal selic = BigDecimal.ZERO; // input (deverar buscar online)
+    private Double taxaAdm = 0.0;
+    private BigDecimal recompra30 = BigDecimal.ZERO;
+    private BigDecimal acima30 =  BigDecimal.ZERO;
+    private Double lance = 0.0;
+    private BigDecimal selic = BigDecimal.ZERO;
     @NotNull(message = "O campo mesAtual é requerido (apenas para testes)")
-    private Integer mesAtual = 1; // apenas para testes, sera removido no futuro
+    private Integer mesAtual = 1;
 }

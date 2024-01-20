@@ -10,9 +10,9 @@ import java.math.BigDecimal;
 @Setter
 @Builder
 public class SimulacaoDTO {
-    private Integer cota; // sugestao 10
-    private Integer mesContemplacao; // math randon entre o 1 e o prazo maximo.
-    private String formaContemplacao; // a principio sempre Sorteio
+    private Integer cota;
+    private Integer mesContemplacao;
+    private String formaContemplacao;
     private BigDecimal creditoAtualizado;
     private BigDecimal investimentoMensalCorrigido;
     private BigDecimal valorInvestidoCorrigido;
