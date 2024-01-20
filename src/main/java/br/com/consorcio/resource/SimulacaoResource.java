@@ -34,7 +34,7 @@ public class SimulacaoResource {
     private List<SimulacaoDTO> simulacaoDTOList = new ArrayList<>();
 
     @PostMapping
-    @Operation(summary = "Simula um investimento no consorcio com até 10 cotas")
+    @Operation(summary = "Simula um investimento no consorcio")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "422", description = "Erro na validação dos campos",
                     content = @Content) })
@@ -44,7 +44,7 @@ public class SimulacaoResource {
     }
 
     @GetMapping("/soma")
-    @Operation(summary = "Soma os campos das cotas")
+    @Operation(summary = "Soma os campos Crédito, Investimento Inicial, Investimento Pós Contemplação e Valor Investido")
     public ResponseEntity<SomaSimulacaoDTO> simular(){
         return ok(somaSimulacaoService.somaSimulacao(simulacaoDTOList));
     }

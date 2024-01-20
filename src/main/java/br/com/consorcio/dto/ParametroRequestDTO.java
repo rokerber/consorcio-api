@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,6 +13,10 @@ import java.math.BigDecimal;
 @Setter
 @Builder
 public class ParametroRequestDTO {
+    @NotNull(message = "O campo cota é requerido")
+    private Integer cota = 1;
+    @NotNull(message = "O campo mesContemplacaoList é requerido")
+    private List<Integer> mesContemplacaoList;
     @NotNull(message = "O campo modalidade é requerido")
     private Modalidade modalidade = Modalidade.CHEIA;
     @NotNull(message = "O campo valorCredito é requerido")

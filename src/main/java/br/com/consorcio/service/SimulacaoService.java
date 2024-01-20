@@ -12,13 +12,11 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 
-import static br.com.consorcio.utils.Util.getRandomNumber;
 import static br.com.consorcio.utils.Util.validaCampos;
 
 @Service
 public class SimulacaoService {
 
-    private static final int COTA = 10;
     public static final int ESCALA2 = 2;
     public static final int ESCALA10 = 10;
 
@@ -31,14 +29,16 @@ public class SimulacaoService {
         double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
         double incc = parametroRequestDTO.getIncc() * 0.01;
         int prazo = parametroRequestDTO.getPrazo();
+        int cota = parametroRequestDTO.getCota();
+        List<Integer> valorMesContemplacaoList = parametroRequestDTO.getMesContemplacaoList();
         BigDecimal valorCredito = parametroRequestDTO.getValorCredito();
         Modalidade modalidade = parametroRequestDTO.getModalidade();
         String formaContemplacao = lance == 0.0 ? "SORTEIO" : "Lance Fixo";
-        for (int i = 1; i <= COTA; i++) {
+        for (int i = 1; i <= cota; i++) {
             List<BigDecimal> valorCreditoList = new ArrayList<>();
             Set<BigDecimal> investimentoMensalSet = new HashSet<>();
+            int valorMesContemplacao = valorMesContemplacaoList.get(i - 1);
 
-            int valorMesContemplacao = valorMesContemplacao(prazo);
             BigDecimal creditoComIncc = gerarCreditoComIncc(valorMesContemplacao, incc, valorCredito, parametroRequestDTO.getMesAtual(), valorCreditoList);
             BigDecimal valorCreditoMaisTaxaAdm = gerarValorCreditoMaisTaxaAdm(creditoComIncc, taxaAdm);
             BigDecimal valorCreditoAtualizadoEscala2 = gerarCreditoAtualizado(creditoComIncc, valorCreditoMaisTaxaAdm, lance, ESCALA2);
@@ -69,10 +69,6 @@ public class SimulacaoService {
                     .build());
         }
         return simulacaoDTOList;
-    }
-
-    public int valorMesContemplacao(int prazo) {
-        return getRandomNumber(1, prazo);
     }
 
     public BigDecimal gerarCreditoComIncc(int valorMesContemplacao, double incc, BigDecimal valorCredito, int monthValue, List<BigDecimal> valorCreditoList) {
