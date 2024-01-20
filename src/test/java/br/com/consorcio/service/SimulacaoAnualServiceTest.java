@@ -32,29 +32,18 @@ public class SimulacaoAnualServiceTest {
         List<TabelaAnualDTO> tabelaAnualDTOList = simulacaoAnualService.simular(parametroRequestDTO);
         TabelaAnualDTO tabelaAnualDTOAnoZero = tabelaAnualDTOList.get(0);
 
-        assertEquals(240, tabelaAnualDTOAnoZero.getMes());
         assertEquals(0, tabelaAnualDTOAnoZero.getAno());
-        assertEquals(new BigDecimal("62500.00"), tabelaAnualDTOAnoZero.getCredito());
+        assertEquals(new BigDecimal("62500.00"), tabelaAnualDTOAnoZero.getCreditoAtualizadoAnual());
         assertEquals(new BigDecimal("125000.00"), tabelaAnualDTOAnoZero.getSaldoDevedor());
-        assertEquals(new BigDecimal("3125.00"), tabelaAnualDTOAnoZero.getAcumuladoMeiaParcela());
-        assertEquals(new BigDecimal("260.42"), tabelaAnualDTOAnoZero.getMeiaParcela());
-        assertEquals(new BigDecimal("3125.00"), tabelaAnualDTOAnoZero.getAnual());
-        assertEquals(new BigDecimal("520.83"), tabelaAnualDTOAnoZero.getParcelaCheia());
-        assertEquals(new BigDecimal("6250.00"), tabelaAnualDTOAnoZero.getAnualCheia());
-        assertEquals(new BigDecimal("6250.00"), tabelaAnualDTOAnoZero.getAcumuladoParcelaCheia());
-        assertEquals(new BigDecimal("125000.00"), tabelaAnualDTOAnoZero.getTotalAserPago());
+        assertEquals(new BigDecimal("3125.00"), tabelaAnualDTOAnoZero.getInvestimentoAnualCorrigido());
+        assertEquals(new BigDecimal("9375.00"), tabelaAnualDTOAnoZero.getValorDaVenda());
 
         TabelaAnualDTO tabelaAnualDTOAno19 = tabelaAnualDTOList.get(tabelaAnualDTOList.size() - 1);
 
-        assertEquals(new BigDecimal("226032.97"), tabelaAnualDTOAno19.getCredito());
+        assertEquals(new BigDecimal("226032.97"), tabelaAnualDTOAno19.getCreditoAtualizadoAnual());
         assertEquals(new BigDecimal("22603.30"), tabelaAnualDTOAno19.getSaldoDevedor());
-        assertEquals(new BigDecimal("128110.91"), tabelaAnualDTOAno19.getAcumuladoMeiaParcela());
-        assertEquals(new BigDecimal("941.80"), tabelaAnualDTOAno19.getMeiaParcela());
-        assertEquals(new BigDecimal("11301.65"), tabelaAnualDTOAno19.getAnual());
-        assertEquals(new BigDecimal("1883.61"), tabelaAnualDTOAno19.getParcelaCheia());
-        assertEquals(new BigDecimal("22603.30"), tabelaAnualDTOAno19.getAnualCheia());
-        assertEquals(new BigDecimal("256221.83"), tabelaAnualDTOAno19.getAcumuladoParcelaCheia());
-        assertEquals(new BigDecimal("256221.83"), tabelaAnualDTOAno19.getTotalAserPago());
+        assertEquals(new BigDecimal("128110.91"), tabelaAnualDTOAno19.getInvestimentoAnualCorrigido());
+        assertEquals(new BigDecimal("45206.59"), tabelaAnualDTOAno19.getValorDaVenda());
 
     }
 

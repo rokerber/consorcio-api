@@ -10,15 +10,9 @@ import java.math.BigDecimal;
 @Setter
 @Builder
 public class TabelaAnualDTO {
-    private Integer mes;
     private Integer ano;
-    private BigDecimal credito;
+    private BigDecimal creditoAtualizadoAnual;
+    private BigDecimal investimentoAnualCorrigido;
     private BigDecimal saldoDevedor;
-    private BigDecimal acumuladoMeiaParcela;
-    private BigDecimal meiaParcela;
-    private BigDecimal anual;
-    private BigDecimal parcelaCheia;
-    private BigDecimal anualCheia;
-    private BigDecimal acumuladoParcelaCheia;
-    private BigDecimal totalAserPago;
+    private BigDecimal valorDaVenda;
 }
