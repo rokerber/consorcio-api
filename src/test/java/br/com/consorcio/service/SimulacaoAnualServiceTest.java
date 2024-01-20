@@ -21,6 +21,8 @@ public class SimulacaoAnualServiceTest {
     @Test
     void validaTodosOsCamposDoAnoZeroEAno19() {
         ParametroRequestDTO parametroRequestDTO = ParametroRequestDTO.builder()
+                .cota(2)
+                .mesContemplacaoList(List.of(1,2))
                 .modalidade(Modalidade.MEIA)
                 .valorCredito(BigDecimal.valueOf(100000))
                 .prazo(240)

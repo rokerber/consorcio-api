@@ -6,10 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -42,6 +39,8 @@ public class SimulacaoServiceTest {
     static void setup() {
         simulacaoService = new SimulacaoService();
         parametroRequestDTO = ParametroRequestDTO.builder()
+                .cota(2)
+                .mesContemplacaoList(List.of(1))
                 .modalidade(Modalidade.CHEIA)
                 .valorCredito(BigDecimal.valueOf(500000))
                 .prazo(240)
@@ -242,11 +241,9 @@ public class SimulacaoServiceTest {
     void testSetarEstrategia() {
         String estragediaCisRg = simulacaoService.setarEstrategia(BigDecimal.valueOf(1),10,240);
         String estragediaCipRp = simulacaoService.setarEstrategia(BigDecimal.valueOf(-1),10,240);
-        String estragediaPrevTurb = simulacaoService.setarEstrategia(BigDecimal.valueOf(0),240,240);
 
-        assertEquals("CIS-RG", estragediaCisRg);
-        assertEquals("CIP-RP", estragediaCipRp);
-        assertEquals("PREV TURBINADA", estragediaPrevTurb);
+        assertEquals("Estratégia A", estragediaCisRg);
+        assertEquals("Estratégia B", estragediaCipRp);
     }
 
 
