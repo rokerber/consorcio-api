@@ -1,10 +1,9 @@
 package br.com.consorcio.service;
 
 import br.com.consorcio.dto.ParametroRequestDTO;
-import br.com.consorcio.dto.TabelaReajusteDTO;
+import br.com.consorcio.dto.TabelaAnualDTO;
 import br.com.consorcio.enums.Modalidade;
 import org.apache.commons.lang3.ObjectUtils;
-import org.bouncycastle.math.raw.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,17 +16,17 @@ import static br.com.consorcio.service.SimulacaoService.ESCALA2;
 import static br.com.consorcio.utils.Util.validaCampos;
 
 @Service
-public class SimulacaoReajusteService {
+public class SimulacaoAnualService {
 
     private final static int TOTALMESESANO = 12;
 
     @Autowired
     private SimulacaoService simulacaoService;
 
-    public List<TabelaReajusteDTO> simular(ParametroRequestDTO parametroRequestDTO) {
+    public List<TabelaAnualDTO> simular(ParametroRequestDTO parametroRequestDTO) {
         validaCampos(parametroRequestDTO);
         double lance = ObjectUtils.isEmpty(parametroRequestDTO.getLance()) ? 0.0 : parametroRequestDTO.getLance() * 0.01;
-        List<TabelaReajusteDTO> tabelaReajusteDTOList = new ArrayList<>();
+        List<TabelaAnualDTO> tabelaAnualDTOList = new ArrayList<>();
         List<Integer> mesesList = new ArrayList<>();
         Set<BigDecimal> investimentoMensalSet = new LinkedHashSet<>();
         Modalidade modalidade = parametroRequestDTO.getModalidade();
@@ -64,7 +63,7 @@ public class SimulacaoReajusteService {
             BigDecimal valorInvestidoCorrigidoEscala2 = simulacaoService.gerarValorInvestidoCorrigido(valorCreditoList,investimentoMensalSet, taxaAdm, prazo, ESCALA10,modalidade).setScale(ESCALA2,RoundingMode.HALF_EVEN);
             BigDecimal saldoDevedorInicialEscala2 = simulacaoService.getSaldoDevedorInicial(investimentoMensalSet,saldoDevedorEscala10).setScale(ESCALA2,RoundingMode.HALF_EVEN);
             BigDecimal valorInvestidoCorrigidoEscala2Cheia = simulacaoService.gerarValorInvestidoCorrigido(valorCreditoList,investimentoMensalSet, taxaAdm, prazo, ESCALA10,Modalidade.CHEIA).setScale(ESCALA2,RoundingMode.HALF_EVEN);
-            tabelaReajusteDTOList.add(TabelaReajusteDTO.builder()
+            tabelaAnualDTOList.add(TabelaAnualDTO.builder()
                             .mes(mesesList.get(i))
                             .ano(i)
                             .credito(valorCreditoAtualizadoEscala2)
@@ -78,7 +77,7 @@ public class SimulacaoReajusteService {
                             .totalAserPago(saldoDevedorInicialEscala2)
                     .build());
         }
-        return tabelaReajusteDTOList;
+        return tabelaAnualDTOList;
     }
 
     private BigDecimal getSaldoDevedorEscala10(List<Integer> mesesList, int index, BigDecimal investimentoMensalCorrigidoEscala10Cheia) {

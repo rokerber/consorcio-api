@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Builder
-public class TabelaReajusteDTO {
+public class TabelaAnualDTO {
     private Integer mes;
     private Integer ano;
     private BigDecimal credito;
