@@ -1,10 +1,8 @@
 package br.com.consorcio.resource;
 
-import br.com.consorcio.dto.ParametroRequestDTO;
-import br.com.consorcio.dto.SimulacaoDTO;
-import br.com.consorcio.dto.SomaSimulacaoDTO;
-import br.com.consorcio.dto.TabelaAnualDTO;
+import br.com.consorcio.dto.*;
 import br.com.consorcio.service.SimulacaoAnualService;
+import br.com.consorcio.service.SimulacaoMensalService;
 import br.com.consorcio.service.SimulacaoService;
 import br.com.consorcio.service.SomaSimulacaoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +28,7 @@ public class SimulacaoResource {
     private final SimulacaoService simulacaoService;
     private final SimulacaoAnualService simulacaoAnualService;
     private final SomaSimulacaoService somaSimulacaoService;
+    private final SimulacaoMensalService simulacaoMensalService;
 
     private List<SimulacaoDTO> simulacaoDTOList = new ArrayList<>();
 
@@ -55,6 +54,13 @@ public class SimulacaoResource {
     @ApiResponses(value = {@ApiResponse(responseCode = "422", description = "Erro na validação dos campos", content = @Content)})
     public ResponseEntity<List<TabelaAnualDTO>> simulacaoAnual(@Valid @RequestBody @Parameter(description = "Parametros de entrada para simular o consorcio anualmente") ParametroRequestDTO parametroRequestDTO) {
         return ok(simulacaoAnualService.simular(parametroRequestDTO));
+    }
+
+    @PostMapping("/mensal")
+    @Operation(summary = "Demostra os dados da simulação mensalmente")
+    @ApiResponses(value = {@ApiResponse(responseCode = "422", description = "Erro na validação dos campos", content = @Content)})
+    public ResponseEntity<List<TabelaMensalDTO>> simulacaoMensal(@Valid @RequestBody @Parameter(description = "Parametros de entrada para simular o consorcio mensalmente") ParametroRequestDTO parametroRequestDTO) {
+        return ok(simulacaoMensalService.simular(parametroRequestDTO));
     }
 
 }
