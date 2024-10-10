@@ -10,7 +10,11 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static br.com.consorcio.utils.Util.validaCampos;
 
@@ -22,9 +26,7 @@ public class SimulacaoService {
 
     public List<SimulacaoDTO> simular(ParametroRequestDTO parametroRequestDTO) {
         validaCampos(parametroRequestDTO);
-        // monta a tabela para retornar
         List<SimulacaoDTO> simulacaoDTOList = new ArrayList<>();
-        LocalDate currentdate = LocalDate.now();
         double lance = ObjectUtils.isEmpty(parametroRequestDTO.getLance()) ? 0.0 : parametroRequestDTO.getLance() * 0.01;
         double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
         double incc = parametroRequestDTO.getIncc() * 0.01;
