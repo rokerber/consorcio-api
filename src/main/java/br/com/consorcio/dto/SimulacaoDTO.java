@@ -22,4 +22,5 @@ public class SimulacaoDTO {
     private BigDecimal lucroLiquido;
     private String retornSobCapitalInvest;
     private String estrategia;
+    private BigDecimal rendimentoCdi;
 }

@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 public enum Estrategia {
 
-    ESTRATEGIAA(0, "Estratégia A"),
-    ESTRATEGIAB(1, "Estratégia B");
+    ESTRATEGIAA(0, "CIS-RG"),
+    ESTRATEGIAB(1, "SIPA");
 
     private final int codigo;
     private final String descricao;

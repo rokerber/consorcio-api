@@ -2,8 +2,6 @@ package br.com.consorcio.common;
 
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -36,14 +34,14 @@ public class ResourceExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(err);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<StandardError> constraintViolation(ConstraintViolationException e, HttpServletRequest request){
-        ValidationError err = new ValidationError(System.currentTimeMillis(), HttpStatus.UNPROCESSABLE_ENTITY.value(),"Constraint Validation error", "Erro na validação dos campos", request.getRequestURI());
-        for(ConstraintViolation<?> x: e.getConstraintViolations()) {
-            err.addError(x.getPropertyPath().toString(),x.getMessage());
-        }
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(err);
-    }
+//    @ExceptionHandler(ConstraintViolationException.class)
+//    public ResponseEntity<StandardError> constraintViolation(ConstraintViolationException e, HttpServletRequest request){
+//        ValidationError err = new ValidationError(System.currentTimeMillis(), HttpStatus.UNPROCESSABLE_ENTITY.value(),"Constraint Validation error", "Erro na validação dos campos", request.getRequestURI());
+//        for(ConstraintViolation<?> x: e.getConstraintViolations()) {
+//            err.addError(x.getPropertyPath().toString(),x.getMessage());
+//        }
+//        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(err);
+//    }
 
 }
 

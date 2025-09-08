@@ -3,13 +3,16 @@ package br.com.consorcio.service;
 import br.com.consorcio.dto.ParametroRequestDTO;
 import br.com.consorcio.dto.TabelaAnualDTO;
 import br.com.consorcio.enums.Modalidade;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import static br.com.consorcio.service.SimulacaoService.ESCALA10;
 import static br.com.consorcio.service.SimulacaoService.ESCALA2;
