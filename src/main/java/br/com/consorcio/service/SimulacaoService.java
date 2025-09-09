@@ -33,7 +33,7 @@ public class SimulacaoService {
         BigDecimal selicAnual = ObjectUtils.defaultIfNull(parametroRequestDTO.getSelic(), new BigDecimal("10.5"));
 
         double taxaAdmPercentual = parametroRequestDTO.getTaxaAdm() * 0.01;
-        double inccPercentual = parametroRequestDTO.getIncc() * 0.01;
+        double indiceCorrecaoPercentual = parametroRequestDTO.getValorIndice() * 0.01;
         int prazo = parametroRequestDTO.getPrazo();
         BigDecimal valorCredito = parametroRequestDTO.getValorCredito();
         Modalidade modalidade = parametroRequestDTO.getModalidade();
@@ -46,7 +46,7 @@ public class SimulacaoService {
             List<BigDecimal> valorCreditoList = new ArrayList<>();
             Set<BigDecimal> investimentoMensalSet = new HashSet<>();
 
-            BigDecimal creditoComIncc = gerarCreditoComIncc(valorMesContemplacao, inccPercentual, valorCredito, mesAtual, valorCreditoList);
+            BigDecimal creditoComIncc = gerarCreditoComIncc(valorMesContemplacao, indiceCorrecaoPercentual, valorCredito, mesAtual, valorCreditoList);
             BigDecimal valorCreditoMaisTaxaAdm = gerarValorCreditoMaisTaxaAdm(creditoComIncc, taxaAdmPercentual);
             BigDecimal valorCreditoAtualizadoEscala2 = gerarCreditoAtualizado(creditoComIncc, valorCreditoMaisTaxaAdm, lancePercentual, ESCALA2);
             BigDecimal investimentoMensalCorrigidoEscala2 = gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdm, prazo, ESCALA2,modalidade);
@@ -54,7 +54,6 @@ public class SimulacaoService {
             BigDecimal valorInvestidoCorrigidoEscala10 = gerarValorInvestidoCorrigido(valorCreditoList,investimentoMensalSet, taxaAdmPercentual, prazo, ESCALA10,modalidade);
             BigDecimal valorInvestidoCorrigidoEscala2 = valorInvestidoCorrigidoEscala10.setScale(ESCALA2,RoundingMode.HALF_EVEN);
 
-            // CHAMADA AO MÉTODO ATUALIZADO
             BigDecimal valorVendaEscala10 = gerarValorVenda(
                     valorCreditoAtualizadoEscala2,
                     valorMesContemplacao,
@@ -89,20 +88,9 @@ public class SimulacaoService {
         return simulacaoDTOList;
     }
 
-    private BigDecimal gerarRendimentoCdi(BigDecimal valorInvestido, BigDecimal taxaAnual, int meses) {
-        if (valorInvestido == null || taxaAnual == null || meses <= 0) {
-            return BigDecimal.ZERO;
-        }
-        BigDecimal taxaAnualDecimal = taxaAnual.divide(new BigDecimal("100"), ESCALA10, RoundingMode.HALF_UP);
-        double taxaMensal = Math.pow(1 + taxaAnualDecimal.doubleValue(), 1.0/12.0) - 1;
-        BigDecimal montanteFinal = valorInvestido.multiply(
-                BigDecimal.valueOf(Math.pow(1 + taxaMensal, meses))
-        );
-        BigDecimal rendimento = montanteFinal.subtract(valorInvestido);
-        return rendimento.setScale(ESCALA2, RoundingMode.HALF_UP);
-    }
-
+    // O parâmetro 'incc' aqui agora representa o valor do índice (INCC ou INPC)
     public BigDecimal gerarCreditoComIncc(int valorMesContemplacao, double incc, BigDecimal valorCredito, int monthValue, List<BigDecimal> valorCreditoList) {
+        // ... (lógica interna não muda)
         int counter = 0;
         int mesesRestantes = 13 - monthValue;
         for (int i = 0; i < valorMesContemplacao && i < mesesRestantes; i++) {
@@ -131,6 +119,8 @@ public class SimulacaoService {
         }
         return valorCredito;
     }
+
+    // ... (resto dos seus métodos de cálculo permanecem os mesmos) ...
 
     public BigDecimal gerarValorCreditoMaisTaxaAdm(BigDecimal creditoComIncc, double taxaAdm) {
         BigDecimal valorCreditoVezesTaxaAdm = creditoComIncc.multiply(BigDecimal.valueOf(taxaAdm));
@@ -201,18 +191,24 @@ public class SimulacaoService {
         return saldoDevedor.add(anual);
     }
 
-    /**
-     * MÉTODO ATUALIZADO
-     * Agora usa as percentagens dinâmicas vindas do DTO em vez de valores fixos.
-     */
     public BigDecimal gerarValorVenda(BigDecimal valorCreditoAtualizado, int valorMesContemplacao, Double percentualAte30, Double percentualApos30, int scale) {
         double taxaVendaAte30 = ObjectUtils.defaultIfNull(percentualAte30, 15.0);
         double taxaVendaApos30 = ObjectUtils.defaultIfNull(percentualApos30, 20.0);
-
-        // Converte para decimal
         double taxaValorVenda = valorMesContemplacao <= 30 ? taxaVendaAte30 * 0.01 : taxaVendaApos30 * 0.01;
-
         return valorCreditoAtualizado.multiply(BigDecimal.valueOf(taxaValorVenda)).setScale(scale, RoundingMode.HALF_EVEN);
+    }
+
+    private BigDecimal gerarRendimentoCdi(BigDecimal valorInvestido, BigDecimal taxaAnual, int meses) {
+        if (valorInvestido == null || taxaAnual == null || meses <= 0) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal taxaAnualDecimal = taxaAnual.divide(new BigDecimal("100"), ESCALA10, RoundingMode.HALF_UP);
+        double taxaMensal = Math.pow(1 + taxaAnualDecimal.doubleValue(), 1.0/12.0) - 1;
+        BigDecimal montanteFinal = valorInvestido.multiply(
+                BigDecimal.valueOf(Math.pow(1 + taxaMensal, meses))
+        );
+        BigDecimal rendimento = montanteFinal.subtract(valorInvestido);
+        return rendimento.setScale(ESCALA2, RoundingMode.HALF_UP);
     }
 
     public BigDecimal gerarIR(BigDecimal valorDaVenda, BigDecimal valorInvestidoCorrigido, int mesContemplacao, int scale) {
@@ -248,4 +244,6 @@ public class SimulacaoService {
         }
     }
 }
+
+
 

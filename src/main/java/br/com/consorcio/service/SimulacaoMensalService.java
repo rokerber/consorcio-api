@@ -34,7 +34,7 @@ public class SimulacaoMensalService {
         Set<BigDecimal> investimentoMensalSet = new LinkedHashSet<>();
         Modalidade modalidade = parametroRequestDTO.getModalidade();
         int prazo = parametroRequestDTO.getPrazo();
-        double incc = parametroRequestDTO.getIncc() * 0.01;
+        double incc = parametroRequestDTO.getValorIndice() * 0.01;
         double taxaAdm = parametroRequestDTO.getTaxaAdm() * 0.01;
         BigDecimal valorCredito = parametroRequestDTO.getValorCredito();
         int mesAtual = parametroRequestDTO.getMesAtual();

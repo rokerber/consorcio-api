@@ -30,7 +30,7 @@ public class Util {
         if (parametroRequestDTO.getPrazo() == 0 || ObjectUtils.isEmpty(parametroRequestDTO.getPrazo())) {
             throw new DataIntegrityViolationException("campo prazo não pode ser zero ou nulo!");
         }
-        if (parametroRequestDTO.getIncc() == 0 || ObjectUtils.isEmpty(parametroRequestDTO.getPrazo())) {
+        if (parametroRequestDTO.getValorIndice() == 0 || ObjectUtils.isEmpty(parametroRequestDTO.getPrazo())) {
             throw new DataIntegrityViolationException("campo incc não pode ser zero ou nulo!");
         }
         if (parametroRequestDTO.getTaxaAdm() == 0 || ObjectUtils.isEmpty(parametroRequestDTO.getPrazo())) {
