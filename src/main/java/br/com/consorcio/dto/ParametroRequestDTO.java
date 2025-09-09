@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 @Builder
 public class ParametroRequestDTO {
+    // --- Parâmetros Principais ---
     @NotNull(value = "O campo valorCredito é requerido")
     private BigDecimal valorCredito;
 
@@ -28,11 +29,13 @@ public class ParametroRequestDTO {
 
     private List<Integer> mesContemplacaoList;
 
-    private BigDecimal recompra30;
-    private BigDecimal acima30;
-    private Double lance;
+    @NotNull(value = "O campo percentualVendaAte30 é requerido")
+    private Double percentualVendaAte30;
 
+    @NotNull(value = "O campo percentualVendaApos30 é requerido")
+    private Double percentualVendaApos30;
+    private Double lance;
     private BigDecimal selic;
-    private Integer mesAtual = 1;
-    private Integer cota = 1;
+    private Integer mesAtual = 1; // Default
+    private Integer cota = 1; // Default
 }

@@ -28,10 +28,9 @@ public class SimulacaoService {
         validaCampos(parametroRequestDTO);
         List<SimulacaoDTO> simulacaoDTOList = new ArrayList<>();
 
-        // --- SANEAMENTO DE PARÂMETROS E VALORES POR DEFEITO ---
         double lancePercentual = ObjectUtils.defaultIfNull(parametroRequestDTO.getLance(), 0.0) * 0.01;
         Integer mesAtual = ObjectUtils.defaultIfNull(parametroRequestDTO.getMesAtual(), LocalDate.now().getMonthValue());
-        BigDecimal selicAnual = ObjectUtils.defaultIfNull(parametroRequestDTO.getSelic(), new BigDecimal("10.5")); // Usado para o cálculo do CDI
+        BigDecimal selicAnual = ObjectUtils.defaultIfNull(parametroRequestDTO.getSelic(), new BigDecimal("10.5"));
 
         double taxaAdmPercentual = parametroRequestDTO.getTaxaAdm() * 0.01;
         double inccPercentual = parametroRequestDTO.getIncc() * 0.01;
@@ -54,14 +53,21 @@ public class SimulacaoService {
             BigDecimal investimentoMensalCorrigidoEscala10Cheia = gerarInvestimentoMensalCorrigido(valorCreditoMaisTaxaAdm, prazo, ESCALA10,Modalidade.CHEIA);
             BigDecimal valorInvestidoCorrigidoEscala10 = gerarValorInvestidoCorrigido(valorCreditoList,investimentoMensalSet, taxaAdmPercentual, prazo, ESCALA10,modalidade);
             BigDecimal valorInvestidoCorrigidoEscala2 = valorInvestidoCorrigidoEscala10.setScale(ESCALA2,RoundingMode.HALF_EVEN);
-            BigDecimal valorVendaEscala10 = gerarValorVenda(valorCreditoAtualizadoEscala2, valorMesContemplacao, ESCALA10);
+
+            // CHAMADA AO MÉTODO ATUALIZADO
+            BigDecimal valorVendaEscala10 = gerarValorVenda(
+                    valorCreditoAtualizadoEscala2,
+                    valorMesContemplacao,
+                    parametroRequestDTO.getPercentualVendaAte30(),
+                    parametroRequestDTO.getPercentualVendaApos30(),
+                    ESCALA10
+            );
+
             BigDecimal valorVendaEscala2 = valorVendaEscala10.setScale(ESCALA2,RoundingMode.HALF_EVEN);
             BigDecimal valorIREscala10 = gerarIR(valorVendaEscala2, valorInvestidoCorrigidoEscala2, valorMesContemplacao, ESCALA10);
             BigDecimal valorIREscala2 = valorIREscala10.setScale(ESCALA2,RoundingMode.HALF_EVEN);
             BigDecimal valorLucroLiquidoEscala2 = gerarLucroLiquido(valorVendaEscala10, valorIREscala10, valorInvestidoCorrigidoEscala10, ESCALA2);
             BigDecimal retornSobCapitalInvest = gerarRetornoSobreCapitalInvestido(valorLucroLiquidoEscala2, valorInvestidoCorrigidoEscala2);
-
-            // NOVO CÁLCULO SENDO CHAMADO AQUI
             BigDecimal rendimentoCdi = gerarRendimentoCdi(valorInvestidoCorrigidoEscala2, selicAnual, valorMesContemplacao);
 
             simulacaoDTOList.add(SimulacaoDTO.builder()
@@ -77,7 +83,7 @@ public class SimulacaoService {
                     .lucroLiquido(valorLucroLiquidoEscala2)
                     .retornSobCapitalInvest(retornSobCapitalInvest.toString().concat("%"))
                     .estrategia(setarEstrategia(retornSobCapitalInvest,valorMesContemplacao,prazo))
-                    .rendimentoCdi(rendimentoCdi) // POPULANDO O NOVO CAMPO
+                    .rendimentoCdi(rendimentoCdi)
                     .build());
         }
         return simulacaoDTOList;
@@ -87,44 +93,28 @@ public class SimulacaoService {
         if (valorInvestido == null || taxaAnual == null || meses <= 0) {
             return BigDecimal.ZERO;
         }
-
-        // Converte a taxa anual (ex: 10.5) para decimal (0.105)
         BigDecimal taxaAnualDecimal = taxaAnual.divide(new BigDecimal("100"), ESCALA10, RoundingMode.HALF_UP);
-
-        // Converte a taxa anual para uma taxa mensal equivalente
-        // Formula: (1 + taxaAnual)^(1/12) - 1
         double taxaMensal = Math.pow(1 + taxaAnualDecimal.doubleValue(), 1.0/12.0) - 1;
-
-        // Calcula o montante total ao final do período (principal + juros)
-        // Formula: P * ( (1+r)^n - 1 ) / r  (soma de uma PG, para aportes mensais)
-        // Para simplificar a comparação, vamos calcular o rendimento sobre o valor total já investido.
         BigDecimal montanteFinal = valorInvestido.multiply(
                 BigDecimal.valueOf(Math.pow(1 + taxaMensal, meses))
         );
-
         BigDecimal rendimento = montanteFinal.subtract(valorInvestido);
-
         return rendimento.setScale(ESCALA2, RoundingMode.HALF_UP);
     }
 
     public BigDecimal gerarCreditoComIncc(int valorMesContemplacao, double incc, BigDecimal valorCredito, int monthValue, List<BigDecimal> valorCreditoList) {
         int counter = 0;
         int mesesRestantes = 13 - monthValue;
-
         for (int i = 0; i < valorMesContemplacao && i < mesesRestantes; i++) {
             valorCreditoList.add(valorCredito);
         }
-
         if (valorMesContemplacao > mesesRestantes) {
             counter++;
         }
-
         for (int i = 26 - monthValue; i <= valorMesContemplacao; i += 12) {
             counter++;
         }
-
         int meses = valorMesContemplacao - mesesRestantes;
-
         for (int i = 0; i < counter; i++) {
             BigDecimal creditoMaisIncc = valorCredito.multiply(new BigDecimal(incc));
             valorCredito = valorCredito.add(creditoMaisIncc);
@@ -139,7 +129,6 @@ public class SimulacaoService {
                 }
             }
         }
-
         return valorCredito;
     }
 
@@ -153,13 +142,11 @@ public class SimulacaoService {
             BigDecimal valorCreditoVezesLance = valorCreditoMaisTaxaAdm.multiply(BigDecimal.valueOf(lance));
             creditoComIncc = creditoComIncc.subtract(valorCreditoVezesLance);
         }
-
         return creditoComIncc.setScale(scale, RoundingMode.HALF_EVEN);
     }
 
     public BigDecimal gerarInvestimentoMensalCorrigido(BigDecimal valorCreditoMaisTaxaAdm, int prazo, int scale, Modalidade modalidade) {
         BigDecimal investMenCorr = valorCreditoMaisTaxaAdm.divide(BigDecimal.valueOf(prazo), ESCALA10, RoundingMode.HALF_EVEN);
-
         if (modalidade == Modalidade.CHEIA) {
             return investMenCorr.setScale(scale,RoundingMode.HALF_EVEN);
         } else {
@@ -196,36 +183,36 @@ public class SimulacaoService {
             int ano = prazo - 12 * (investimentoMensalSet.size() - 1);
             int mesesRestantes = prazo - valorMesContemplacao;
             BigDecimal saldoDevedor = investimentoMensalCorrigido.multiply(BigDecimal.valueOf(ano));
-
             BigDecimal saldoDevedorInicial = getSaldoDevedorInicial(investimentoMensalSet, saldoDevedor);
-
             BigDecimal saldoDevedorInicialMenosLance = saldoDevedorInicial.subtract(saldoDevedorInicial.multiply(BigDecimal.valueOf(lance)));
-
             BigDecimal saldoDevedorFinal = saldoDevedorInicialMenosLance.subtract(valorInvestidoCorrigido);
-
             return saldoDevedorFinal.divide(BigDecimal.valueOf(mesesRestantes),ESCALA2,RoundingMode.HALF_EVEN);
         }
     }
 
     public BigDecimal getSaldoDevedorInicial(Set<BigDecimal> investimentoMensalSet, BigDecimal saldoDevedor) {
         BigDecimal anual = BigDecimal.ZERO;
-
         List<BigDecimal> investimentoMensalList = new ArrayList<>(investimentoMensalSet);
-
         Collections.sort(investimentoMensalList);
-
         investimentoMensalList.remove(investimentoMensalList.size() - 1);
-
         for (BigDecimal invest: investimentoMensalList) {
             anual = anual.add(invest.multiply(BigDecimal.valueOf(12)));
         }
-
         return saldoDevedor.add(anual);
     }
 
-    public BigDecimal gerarValorVenda(BigDecimal valorCreditoAtulizado, int valorMesContemplacao, int scale) {
-        double taxaValorVenda = valorMesContemplacao <= 30 ? 0.15 : 0.2;
-        return valorCreditoAtulizado.multiply(BigDecimal.valueOf(taxaValorVenda)).setScale(scale, RoundingMode.HALF_EVEN);
+    /**
+     * MÉTODO ATUALIZADO
+     * Agora usa as percentagens dinâmicas vindas do DTO em vez de valores fixos.
+     */
+    public BigDecimal gerarValorVenda(BigDecimal valorCreditoAtualizado, int valorMesContemplacao, Double percentualAte30, Double percentualApos30, int scale) {
+        double taxaVendaAte30 = ObjectUtils.defaultIfNull(percentualAte30, 15.0);
+        double taxaVendaApos30 = ObjectUtils.defaultIfNull(percentualApos30, 20.0);
+
+        // Converte para decimal
+        double taxaValorVenda = valorMesContemplacao <= 30 ? taxaVendaAte30 * 0.01 : taxaVendaApos30 * 0.01;
+
+        return valorCreditoAtualizado.multiply(BigDecimal.valueOf(taxaValorVenda)).setScale(scale, RoundingMode.HALF_EVEN);
     }
 
     public BigDecimal gerarIR(BigDecimal valorDaVenda, BigDecimal valorInvestidoCorrigido, int mesContemplacao, int scale) {
