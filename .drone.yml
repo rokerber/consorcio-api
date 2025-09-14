@@ -1,0 +1,45 @@
+kind: pipeline
+type: docker
+name: consorcio-api-pipeline
+
+# Gatilho: Executa em pushes para a branch 'main' e em qualquer pull request.
+trigger:
+  branch:
+    - main
+  event:
+    - push
+    - pull_request
+
+steps:
+  # Passo 1: Construir e testar a aplicação Java
+  - name: build-and-test
+    image: maven:3.8-openjdk-17-slim # Imagem com Maven e Java 17
+    commands:
+      # - Instala as dependências, compila, executa os testes e empacota a aplicação
+      - mvn clean install
+
+  # Passo 2: Construir e publicar a imagem Docker
+  # Este passo é opcional e depende de você ter um Docker Registry (como o do Gitea, Docker Hub, etc.)
+  - name: build-and-publish-image
+    image: plugins/docker
+    settings:
+      # O endereço do seu registry. Se estiver usando Docker Hub, pode omitir.
+      # Se for o registry do Gitea, será algo como gitea.seuservidor.com:5000
+      registry: docker.io
+      # Nome do repositório da imagem. Ex: "username/consorcio-api"
+      repo: k3rb3rdock/consorcio-api
+      # Tags da imagem. 'latest' e o hash do commit são boas práticas.
+      tags:
+        - latest
+        - ${DRONE_COMMIT_SHA:0:7}
+      # Usuário e senha para o registry, configurados como "secrets" no Drone
+      username:
+        from_secret: kerber
+      password:
+        from_secret: rokt
+    # Este passo só executa em pushes para a branch 'main', e não em pull requests.
+    when:
+      branch:
+        - main
+      event:
+        - push
