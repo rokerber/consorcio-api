@@ -9,6 +9,7 @@ trigger:
   event:
     - push
     - pull_request
+    - custom
 
 steps:
   # Passo 1: Construir e testar a aplicação Java
