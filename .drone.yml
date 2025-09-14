@@ -18,8 +18,6 @@ steps:
       # - Instala as dependências, compila, executa os testes e empacota a aplicação
       - mvn clean install
 
-  # Passo 2: Construir e publicar a imagem Docker
-  # Este passo é opcional e depende de você ter um Docker Registry (como o do Gitea, Docker Hub, etc.)
   - name: build-and-publish-image
     image: plugins/docker
     settings:
