@@ -10,8 +10,12 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:4200", "http://localhost:8081"
-                        ,"https://consorcio-front.sp1.br.saveincloud.net.br")
+                .allowedOrigins(
+                        "http://localhost:4200", // Para 'ng serve' local
+                        "http://localhost:8081", // Para o Docker Compose local
+                        "http://192.168.49.2:30081" // Para o acesso via Minikube NodePort
+                        // Adicione a URL da SaveInCloud aqui no futuro
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
