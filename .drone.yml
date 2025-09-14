@@ -15,14 +15,10 @@ steps:
   - name: build-and-test
     image: maven:3.8-openjdk-17-slim # Imagem com Maven e Java 17
     commands:
-      # - Instala as dependências, compila, executa os testes e empacota a aplicação
       - mvn clean install
-
   - name: build-and-publish-image
     image: plugins/docker
     settings:
-      # O endereço do seu registry. Se estiver usando Docker Hub, pode omitir.
-      # Se for o registry do Gitea, será algo como gitea.seuservidor.com:5000
       registry: docker.io
       # Nome do repositório da imagem. Ex: "username/consorcio-api"
       repo: k3rb3rdock/consorcio-api
@@ -32,9 +28,9 @@ steps:
         - ${DRONE_COMMIT_SHA:0:7}
       # Usuário e senha para o registry, configurados como "secrets" no Drone
       username:
-        from_secret: kerber
+        from_secret: docker_username
       password:
-        from_secret: rokt
+        from_secret: docker_password
     # Este passo só executa em pushes para a branch 'main', e não em pull requests.
     when:
       branch:
