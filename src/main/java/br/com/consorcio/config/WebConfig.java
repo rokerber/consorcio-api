@@ -11,12 +11,13 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        "http://localhost:4200", // Para 'ng serve' local
-                        "http://localhost:8081", // Para o Docker Compose local
-                        "http://192.168.49.2:30081", // Para o acesso via Minikube NodePort
-                        "http://192.168.40.70:30081",
-                        "https://capability-rochester-threaded-specifics.trycloudflare.com"
-                )
+//                        "http://localhost:4200", // Para 'ng serve' local
+//                        "http://localhost:8081", // Para o Docker Compose local
+//                        "http://192.168.49.2:30081", // Para o acesso via Minikube NodePort
+//                        "http://192.168.40.70:30081",
+//                        "https://capability-rochester-threaded-specifics.trycloudflare.com",
+//                        "https://counties-glen-neither-warranty.trycloudflare.com" // novo túnel
+                "*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
