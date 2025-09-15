@@ -14,7 +14,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://localhost:4200", // Para 'ng serve' local
                         "http://localhost:8081", // Para o Docker Compose local
                         "http://192.168.49.2:30081", // Para o acesso via Minikube NodePort
-                        "http://192.168.40.70:30081" // Para o seu k3s NodePort - ADICIONE ESTA LINHA
+                        "http://192.168.40.70:30081",
+                        "https://capability-rochester-threaded-specifics.trycloudflare.com"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
