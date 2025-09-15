@@ -2,7 +2,6 @@ kind: pipeline
 type: docker
 name: consorcio-api-pipeline
 
-
 # Gatilho: Executa em pushes para a branch 'main' e em qualquer pull request.
 trigger:
   branch:
