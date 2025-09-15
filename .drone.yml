@@ -41,6 +41,7 @@ steps:
       event:
         - push
 
+
   # Passo 3: Fazer o deploy da aplicação no cluster Kubernetes
   - name: deploy-to-k8s
     image: alpine/k8s:1.29.2 # Imagem leve com a ferramenta kubectl
