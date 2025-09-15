@@ -17,6 +17,8 @@ steps:
     image: maven:3.8-openjdk-17-slim # Imagem com Maven e Java 17
     commands:
       - mvn clean install
+
+  # Passo 2: Construir e publicar a imagem Docker
   - name: build-and-publish-image
     image: plugins/docker
     settings:
@@ -33,6 +35,30 @@ steps:
       password:
         from_secret: docker_password
     # Este passo só executa em pushes para a branch 'main', e não em pull requests.
+    when:
+      branch:
+        - main
+      event:
+        - push
+
+  # Passo 3: Fazer o deploy da aplicação no cluster Kubernetes
+  - name: deploy-to-k8s
+    image: alpine/k8s:1.29.2 # Imagem leve com a ferramenta kubectl
+    environment:
+      # O pipeline precisa das credenciais do cluster, que devem ser armazenadas
+      # como um secret no Drone chamado 'kube_config'.
+      KUBE_CONFIG:
+        from_secret: kube_config
+    commands:
+      # Prepara o ambiente do kubectl dentro do container do pipeline
+      - mkdir -p ~/.kube
+      - echo "$KUBE_CONFIG" > ~/.kube/config
+      # ATUALIZA A IMAGEM: Substitui a tag da imagem no manifesto pelo hash do commit
+      # IMPORTANTE: Este comando espera que o manifesto esteja em 'k8s/manifests.yaml'
+      - "sed -i 's|image: consorcio-api:.*|image: k3rb3rdock/consorcio-api:${DRONE_COMMIT_SHA:0:7}|g' k8s/manifests.yaml"
+      # APLICA O MANIFESTO: Executa o deploy no cluster
+      - kubectl apply -f k8s/manifests.yaml
+    # Garante que o deploy só ocorra em pushes na 'main'
     when:
       branch:
         - main

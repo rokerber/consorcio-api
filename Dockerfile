@@ -3,7 +3,7 @@
 # já compilou e testou o código, gerando o arquivo .jar na pasta 'target'.
 
 # Começamos com uma imagem de Java Runtime (JRE) pequena e segura para produção.
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
