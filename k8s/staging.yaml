@@ -1,0 +1,83 @@
+# --- Namespace ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+---
+# --- DEPLOYMENT DA API ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consorcio-api-deployment
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consorcio-api
+  template:
+    metadata:
+      labels:
+        app: consorcio-api
+    spec:
+      containers:
+        - name: consorcio-api-container
+          # Esta linha será substituída pelo pipeline!
+          image: consorcio-api:placeholder
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+---
+# --- SERVICE DA API (INTERNO) ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consorcio-api-service
+  namespace: staging
+spec:
+  selector:
+    app: consorcio-api
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+# --- DEPLOYMENT DO FRONTEND ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consorcio-front-deployment
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consorcio-front
+  template:
+    metadata:
+      labels:
+        app: consorcio-front
+    spec:
+      containers:
+        - name: consorcio-front-container
+          image: consorcio-front:0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+---
+# --- SERVICE DO FRONTEND (A NOSSA PONTE!) ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consorcio-front-service
+  namespace: staging
+spec:
+  selector:
+    app: consorcio-front
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30082
+  type: NodePort

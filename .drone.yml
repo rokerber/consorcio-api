@@ -55,9 +55,12 @@ steps:
       - echo "$KUBE_CONFIG" > ~/.kube/config
       # ATUALIZA A IMAGEM: Substitui a tag da imagem no manifesto pelo hash do commit
       # IMPORTANTE: Este comando espera que o manifesto esteja em 'k8s/manifests.yaml'
-      - "sed -i 's|image: consorcio-api:.*|image: k3rb3rdock/consorcio-api:${DRONE_COMMIT_SHA:0:7}|g' k8s/manifests.yaml"
-      # APLICA O MANIFESTO: Executa o deploy no cluster
-      - kubectl apply -f k8s/manifests.yaml
+      - "sed -i 's|image: consorcio-api:.*|image: k3rb3rdock/consorcio-api:${DRONE_COMMIT_SHA:0:7}|g' k8s/dev.yaml k8s/dev.yaml"
+      # APLICA O MANIFESTO DE DEV
+      - kubectl apply -f k8s/dev.yaml
+      # APLICA O MANIFESTO DE STAGING
+      - kubectl apply -f k8s/staging.yaml
+
     # Garante que o deploy só ocorra em pushes na 'main'
     when:
       branch:
