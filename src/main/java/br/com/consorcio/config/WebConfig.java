@@ -12,8 +12,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:4200",
-                        "https://nov-compiled-arbor-joins.trycloudflare.com",     // dev
-                        "https://conditions-goto-yea-photo.trycloudflare.com"    // staging
+                        "https://kept-bytes-flows-dramatically.trycloudflare.com",     // dev
+                        "https://interactive-commercial-ban-essential.trycloudflare.com"    // staging
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
