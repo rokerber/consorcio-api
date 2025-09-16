@@ -79,5 +79,22 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 30082
+      nodePort: 30082 # <-- A porta que abrimos no nosso "túnel"
+  type: NodePort # <-- O tipo de serviço que nos dá acesso externo direto
+
+# Adicione este service no seu k8s/staging.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consorcio-api-nodeport
+  namespace: staging
+spec:
+  selector:
+    app: consorcio-api
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30091  # Escolha uma porta livre
   type: NodePort
