@@ -12,9 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOriginPatterns(
                         "http://localhost:*",
-                        "https://*.saveincloud.net.br",
-                        "https://*.paas.saveincloud.net.br",
-                        "https://app.paas.saveincloud.net.br"
+                        "https://consorcio-front-sp1.br.saveincloud.net.br"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
                 .allowedHeaders("*")
