@@ -10,16 +10,14 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(
-                        "http://localhost:4200",
-                        "https://consorcio-front.sp1.br.saveincloud.net.br",
-                        // Adicione os hostnames que aparecem no seu frontend
-                        "https://disk-functionality-informal-markers.trycloudflare.com",
-                        "https://repeated-transformation-tip-gap.trycloudflare.com"
+                .allowedOriginPatterns(
+                        "http://localhost:*",
+                        "https://*.saveincloud.net.br",
+                        "https://*.paas.saveincloud.net.br"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
                 .allowedHeaders("*")
                 .allowCredentials(true)
-                .maxAge(3600); // Cache preflight por 1 hora
+                .maxAge(3600);
     }
 }
