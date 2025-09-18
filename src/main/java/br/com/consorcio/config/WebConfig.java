@@ -13,7 +13,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns(
                         "http://localhost:*",
                         "https://*.saveincloud.net.br",
-                        "https://*.paas.saveincloud.net.br"
+                        "https://*.paas.saveincloud.net.br",
+                        "https://app.paas.saveincloud.net.br"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
                 .allowedHeaders("*")
