@@ -1,0 +1,40 @@
+name: 🚀 CI/CD Império Digital
+on: [push, pull_request]
+
+jobs:
+    build-and-test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: 📦 Checkout do código
+              uses: actions/checkout@v4
+
+            - name: 🎉 Bem-vindo ao Império!
+              run: |
+                  echo "╔════════════════════════════════════════╗"
+                  echo "║   🏰 IMPÉRIO DIGITAL AZTECLAB 🏰      ║"
+                  echo "║   ⚔️  Fortaleza Gitea Conquistada!   ║"
+                  echo "╚════════════════════════════════════════╝"
+                  echo ""
+                  echo "🚀 Pipeline executando em: $(date)"
+                  echo "💻 Sistema: $(uname -a)"
+                  echo "📍 Hostname: $(hostname)"
+
+            - name: 🔍 Verificar ambiente
+              run: |
+                  echo "✅ Node.js: $(node --version)"
+                  echo "✅ Docker: $(docker --version)"
+                  echo "✅ Git: $(git --version)"
+
+            - name: 🐳 Testar Docker
+              run: |
+                  docker run --rm hello-world
+                  echo "✅ Docker funcionando perfeitamente!"
+
+            - name: 🎊 Pipeline concluído!
+              run: |
+                  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                  echo "✅ BUILD SUCCESSFUL!"
+                  echo "🏆 Próximo passo: K3s + Deploy automatizado!"
+                  echo "💰 Rumo ao primeiro SaaS lucrativo!"
+                  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
