@@ -1,40 +1,53 @@
 name: 🚀 CI/CD Império Digital
-on: [push, pull_request]
+on: [push]
 
 jobs:
-    build-and-test:
+    build-maven:
         runs-on: ubuntu-latest
-
         steps:
             - name: 📦 Checkout do código
               uses: actions/checkout@v4
 
-            - name: 🎉 Bem-vindo ao Império!
-              run: |
-                  echo "╔════════════════════════════════════════╗"
-                  echo "║   🏰 IMPÉRIO DIGITAL AZTECLAB 🏰      ║"
-                  echo "║   ⚔️  Fortaleza Gitea Conquistada!   ║"
-                  echo "╚════════════════════════════════════════╝"
-                  echo ""
-                  echo "🚀 Pipeline executando em: $(date)"
-                  echo "💻 Sistema: $(uname -a)"
-                  echo "📍 Hostname: $(hostname)"
+            - name: ⚒️ Build com Maven
+              uses: docker://maven:3.9.4-eclipse-temurin-17
+              with:
+                  args: mvn -B clean package -DskipTests
+              env:
+                  MAVEN_OPTS: -Dmaven.repo.local=/tmp/maven-repo
 
-            - name: 🔍 Verificar ambiente
-              run: |
-                  echo "✅ Node.js: $(node --version)"
-                  echo "✅ Docker: $(docker --version)"
-                  echo "✅ Git: $(git --version)"
+    docker-build:
+        runs-on: ubuntu-latest
+        needs: build-maven
+        steps:
+            - name: 📦 Checkout do código
+              uses: actions/checkout@v4
 
-            - name: 🐳 Testar Docker
-              run: |
-                  docker run --rm hello-world
-                  echo "✅ Docker funcionando perfeitamente!"
+            - name: 🔑 Login no Docker Registry
+              run: echo "${{ secrets.CI_REGISTRY_PASSWORD }}" | docker login -u "${{ secrets.CI_REGISTRY_USER }}" --password-stdin ${{ secrets.CI_REGISTRY }}
 
-            - name: 🎊 Pipeline concluído!
+            - name: 🐳 Build e Push Docker Image
               run: |
-                  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                  echo "✅ BUILD SUCCESSFUL!"
-                  echo "🏆 Próximo passo: K3s + Deploy automatizado!"
-                  echo "💰 Rumo ao primeiro SaaS lucrativo!"
-                  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                  IMAGE_TAG=${{ github.sha }}
+                  docker build -t ${{ secrets.CI_REGISTRY }}/consorcio-api:$IMAGE_TAG .
+                  docker push ${{ secrets.CI_REGISTRY }}/consorcio-api:$IMAGE_TAG
+              env:
+                  DOCKER_BUILDKIT: 1
+
+    deploy-dev:
+        runs-on: ubuntu-latest
+        needs: docker-build
+        steps:
+            - name: 📦 Checkout do código
+              uses: actions/checkout@v4
+
+            - name: 🚀 Deploy no Dev (apply + set image)
+              run: |
+                  IMAGE_TAG=${{ github.sha }}
+
+                  echo "📂 Aplicando manifestos do ambiente DEV..."
+                  kubectl apply -f k8s/dev.yaml
+
+                  echo "🔄 Atualizando imagem do backend consorcio-api..."
+                  kubectl -n dev set image deployment/consorcio-api-deployment consorcio-api-container=${{ secrets.CI_REGISTRY }}/consorcio-api:$IMAGE_TAG
+              env:
+                  KUBECONFIG: ${{ secrets.KUBECONFIG }}

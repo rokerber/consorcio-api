@@ -2,99 +2,122 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: dev
+    name: dev
 ---
 # --- DEPLOYMENT DA API ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: consorcio-api-deployment
-  namespace: dev
+    name: consorcio-api-deployment
+    namespace: dev
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: consorcio-api
-  template:
-    metadata:
-      labels:
-        app: consorcio-api
-    spec:
-      containers:
-        - name: consorcio-api-container
-          # Esta linha será substituída pelo pipeline!
-          image: consorcio-api:placeholder
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8080
+    replicas: 1
+    selector:
+        matchLabels:
+            app: consorcio-api
+    template:
+        metadata:
+            labels:
+                app: consorcio-api
+        spec:
+            containers:
+                - name: consorcio-api-container
+                  image: "<IMAGE_PLACEHOLDER>"   # pipeline substitui
+                  imagePullPolicy: IfNotPresent
+                  ports:
+                      - containerPort: 8080
 ---
-# --- SERVICE DA API (INTERNO) ---
+# --- SERVICE DA API (CLUSTERIP) ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: consorcio-api-service
-  namespace: dev
+    name: consorcio-api-service
+    namespace: dev
 spec:
-  selector:
-    app: consorcio-api
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
-  type: ClusterIP
+    selector:
+        app: consorcio-api
+    ports:
+        - protocol: TCP
+          port: 8080
+          targetPort: 8080
+    type: ClusterIP
 ---
 # --- DEPLOYMENT DO FRONTEND ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: consorcio-front-deployment
-  namespace: dev
+    name: consorcio-front-deployment
+    namespace: dev
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: consorcio-front
-  template:
-    metadata:
-      labels:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: consorcio-front
+    template:
+        metadata:
+            labels:
+                app: consorcio-front
+        spec:
+            containers:
+                - name: consorcio-front-container
+                  image: consorcio-front:0.0.1
+                  imagePullPolicy: IfNotPresent
+                  ports:
+                      - containerPort: 80
+---
+# --- SERVICE DO FRONTEND (CLUSTERIP) ---
+apiVersion: v1
+kind: Service
+metadata:
+    name: consorcio-front-service
+    namespace: dev
+spec:
+    selector:
         app: consorcio-front
-    spec:
-      containers:
-        - name: consorcio-front-container
-          image: consorcio-front:0.0.1
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 80
+    ports:
+        - protocol: TCP
+          port: 80
+          targetPort: 80
+    type: ClusterIP
 ---
-# --- SERVICE DO FRONTEND (A NOSSA PONTE!) ---
-apiVersion: v1
-kind: Service
+# --- INGRESS PARA FRONTEND ---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: consorcio-front-service
-  namespace: dev
+    name: consorcio-front-ingress
+    namespace: dev
+    annotations:
+        kubernetes.io/ingress.class: "nginx"
 spec:
-  selector:
-    app: consorcio-front
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-      nodePort: 30081 # <-- A porta que abrimos no nosso "túnel"
-  type: NodePort # <-- O tipo de serviço que nos dá acesso externo direto
-
-# Adicione este service no seu k8s/dev.yaml
+    rules:
+        - host: consorcio.azteclab.cloud
+          http:
+              paths:
+                  - path: /
+                    pathType: Prefix
+                    backend:
+                        service:
+                            name: consorcio-front-service
+                            port:
+                                number: 80
 ---
-apiVersion: v1
-kind: Service
+# --- INGRESS PARA API BACKEND ---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: consorcio-api-nodeport
-  namespace: dev
+    name: consorcio-api-ingress
+    namespace: dev
+    annotations:
+        kubernetes.io/ingress.class: "nginx"
 spec:
-  selector:
-    app: consorcio-api
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
-      nodePort: 30090  # Escolha uma porta livre
-  type: NodePort
+    rules:
+        - host: consorcio-api.azteclab.cloud
+          http:
+              paths:
+                  - path: /
+                    pathType: Prefix
+                    backend:
+                        service:
+                            name: consorcio-api-service
+                            port:
+                                number: 8080
